@@ -69,6 +69,9 @@ with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
 :movi i32_imm16_rx, i32_imm16_imm is i32_op = 0b1010 & i32_imm16_sop = 0b10000 & i32_imm16_rx & i32_imm16_imm {
     i32_imm16_rx = i32_imm16_imm;
 }
+:movih i32_imm16_rx, i32_imm16_imm is i32_op = 0b1010 & i32_imm16_sop = 0b10001 & i32_imm16_rx & i32_imm16_imm {
+    i32_imm16_rx = i32_imm16_imm<<16;
+}
 :mvc i32_r_rz is i32_op = 0b0001 & i32_bit_2125 = 0b00000 & i32_bit_1620 = 0b00000 & i32_bit_1015 = 0b000001 & i32_bit_0509 = 0b01000 & i32_r_rz {
     i32_r_rz = zext($(cf));
 }

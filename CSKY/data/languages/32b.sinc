@@ -70,6 +70,9 @@ i32_imm18_immSPD_O1: t is i32_imm18_sbit = 0b1 & i32_imm18_imm_nsh & i32_imm18_i
 i32_imm16_immSP_O1: label is i32_imm16_sbit = 0b0 & i32_imm16_nsimm [label = inst_start + (i32_imm16_nsimm << 1);] {export *[ram]:4 label; }
 i32_imm16_immSP_O1: label is i32_imm16_sbit = 0b1 &i32_imm16_nsimm [label = inst_start - (0x10000-(i32_imm16_nsimm << 1));] {export *[ram]:4 label; }
 
+i32_imm16_immSP_O2: label is i32_imm16_sbit = 0b0 & i32_imm16_nsimm [label = inst_start + (i32_imm16_nsimm << 2);] {export *[ram]:4 label; }
+i32_imm16_immSP_O2: label is i32_imm16_sbit = 0b1 &i32_imm16_nsimm [label = inst_start - (0x20000-(i32_imm16_nsimm << 2));] {export *[ram]:4 label; }
+
 with : i32_optype = 0b11 {
 @include "32b_data.sinc"
 @include "32b_branch.sinc"

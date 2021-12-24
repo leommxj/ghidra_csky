@@ -56,7 +56,7 @@
 - [x] MOVF32 C=0 Move
 - [x] MOVT32 C=1 Move
 - [x] MOVI32 Move immediate
-- [ ] MOVIH32 Move immediate high
+- [x] MOVIH32 Move immediate high
 - [ ] MTHI32 Write transfer to high bit of accumulator
 - [ ] MTLO32 Write transfer to low bit of accumulator
 - [ ] MFHI32 Read transfer from high bit of accumulator
@@ -131,9 +131,9 @@
 ##### jump
 - [x] BR32 Unconditional jump
 - [x] BSR32 Jump to subprogram
-- [ ] JMPI32 Jump indirect
-- [ ] JSRI32 Jump to subprogram indirect
-- [ ] JMP32 Register jump
+- [x] JMPI32 Jump indirect
+- [x] JSRI32 Jump to subprogram indirect
+- [x] JMP32 Register jump
 - [x] JSR32 Register jump to subprogram
 - [x] RTS32 Link register jump
 - [ ] JMPIX32 Register index jump
@@ -181,10 +181,10 @@
 - [ ] CPRCR32 Read transfer from control register of co-processor
 - [ ] CPWCR32 Write transfer to control register of co-processor
 - [ ] CPRC32 Read transfer from condition bit of co-processor
-##### ~ memory access
+##### co-processor memory access
 - [ ] LDCPR32 Load word to co-processor
 - [ ] STCPR32 Store word in co-processor
-##### ~ operation
+##### co-processor operation
 - [ ] CPOP32 Co-processor operation instruction
 #### Privileged instruction
 ##### control register operation
@@ -274,7 +274,7 @@
 - [x] BF16 C=0 branch instruction
 ##### jump
 - [x] BR16 Unconditional jump
-- [ ] JMP16 Register jump
+- [x] JMP16 Register jump
 - [x] JSR16 Register jump to subprogram
 - [x] RTS16 Link register jump
 - [ ] JMPIX16 Register index jump
