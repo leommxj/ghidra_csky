@@ -51,14 +51,31 @@ with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
 }
 
 # data transfer Part
-# mov should never show??
 :mov i32_r_rz, i32_r_rx is i32_op = 0b0001 & i32_r_sop = 0b010010 & i32_r_pcode = 0b00001 & i32_r_imm5 = 0b00000 & i32_r_rx & i32_r_rz {
     i32_r_rz = i32_r_rx;
+}
+# movf ry is rz; rz is 0
+:movf i32_r_ry, i32_r_rx is i32_op = 0b0001 & i32_r_sop = 0b000011 & i32_r_pcode = 0b00001 & i32_bit_0004 = 0b00000 & i32_r_ry & i32_r_rx{
+    if($(cf)!=0) goto <end>;
+    i32_r_ry = i32_r_rx;
+    <end>
+}
+:movf i32_r_ry, i32_r_rx is i32_op = 0b0001 & i32_r_sop = 0b000011 & i32_r_pcode = 0b00010 & i32_bit_0004 = 0b00000 & i32_r_ry & i32_r_rx{
+    if($(cf)!=1) goto <end>;
+    i32_r_ry = i32_r_rx;
+    <end>
 }
 # movi second format single register imm16 (16,20) is rz
 :movi i32_imm16_rx, i32_imm16_imm is i32_op = 0b1010 & i32_imm16_sop = 0b10000 & i32_imm16_rx & i32_imm16_imm {
     i32_imm16_rx = i32_imm16_imm;
 }
+:mvc i32_r_rz is i32_op = 0b0001 & i32_bit_2125 = 0b00000 & i32_bit_1620 = 0b00000 & i32_bit_1015 = 0b000001 & i32_bit_0509 = 0b01000 & i32_r_rz {
+    i32_r_rz = zext($(cf));
+}
+:mvcv i32_r_rz is i32_op = 0b0001 & i32_bit_2125 = 0b00000 & i32_bit_1620 = 0b00000 & i32_bit_1015 = 0b000001 & i32_bit_0509 = 0b10000 & i32_r_rz {
+    i32_r_rz = zext(~$(cf));
+}
+
 # lrw same as above
 :lrw i32_imm16_rx, label is i32_op = 0b1010 & i32_imm16_sop = 0b10100 & i32_imm16_rx & i32_imm16_imm [label = ((i32_imm16_imm<<2) + inst_start) & 0xfffffffc;] {
     local tmp:4 = ((i32_imm16_imm<<2) + inst_start) & 0xfffffffc;
@@ -114,13 +131,21 @@ with : i32_op = 0b1001 {
 
 
 # shift Part
-# lsl
-:lsl i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b010000 & i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_r_rz {
-    i32_r_rz = (i32_r_rx << (i32_r_ry[0,6]));
-}
-# lsli i32_r_imm5 should in [1-31]
-:lsli i32_r_rz, i32_r_rx, i32_r_imm5 is i32_op = 0b0001 & i32_r_sop = 0b010010 & i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 {
-    i32_r_rz = (i32_r_rx << (i32_r_imm5));
+with : i32_op = 0b0001 {
+    :lsl i32_r_rz, i32_r_rx, i32_r_ry is i32_r_sop = 0b010000 & i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_r_rz {
+        i32_r_rz = (i32_r_rx << (i32_r_ry[0,6]));
+    }
+    # lsli i32_r_imm5 should in [1-31]
+    :lsli i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_sop = 0b010010 & i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 {
+        i32_r_rz = (i32_r_rx << (i32_r_imm5));
+    }
+    :asr i32_r_rz, i32_r_rx, i32_r_ry is i32_r_sop = 0b010000 & i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
+        local tmp:4 = i32_r_ry & 0x3f;
+        i32_r_rz = i32_r_rx s>> tmp;
+    }
+    :asri i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_sop = 0b010010 & i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_imm5 {
+        i32_r_rz = i32_r_rx s>> i32_r_imm5;
+    }
 }
 
 # bit operation Part
@@ -143,6 +168,20 @@ with : i32_op = 0b0001 & i32_r_sop = 0b001010 {
     }
 }
 
+# extract and insert Part
+# msb(pcode) should larger than lsb(imm5) zextb/zexth is pseudo instruction in certain situation
+:zext i32_r_rz, i32_r_rx, i32_r_pcode, i32_r_imm5 is i32_op = 0b0001 & i32_r_sop = 0b010101 & i32_r_rz & i32_r_rx & i32_r_pcode & i32_r_imm5 {
+    local tmp:4 = (i32_r_rx << (31-i32_r_pcode));
+    tmp = (tmp >> (31-i32_r_pcode));
+    tmp = (tmp >> i32_r_imm5);
+    i32_r_rz = zext(tmp);
+}
+:sext i32_r_rz, i32_r_rx, i32_r_pcode, i32_r_imm5 is i32_op = 0b0001 & i32_r_sop = 0b010110 & i32_r_rz & i32_r_rx & i32_r_pcode & i32_r_imm5 {
+    local tmp:4 = (i32_r_rx << (31-i32_r_pcode));
+    tmp = (tmp >> (31-i32_r_pcode));
+    tmp = (tmp >> i32_r_imm5);
+    i32_r_rz = sext(tmp);
+}
 
 # compare Part
 # cmpne/cmphs/cmplt

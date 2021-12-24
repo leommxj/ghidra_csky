@@ -48,6 +48,7 @@ define token ins16(16)
     i16_r4_rz = (6,9)
     i16_r4_ry = (6,9)
     i16_r4_rx = (2,5)
+    i16_r4_rx_n = (2,5)
     i16_r4_sop = (0,1)
 
     # Raw Bits

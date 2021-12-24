@@ -4,3 +4,6 @@ build/
 dist/
 
 *.sla
+
+build.ps1
+test.ps1
