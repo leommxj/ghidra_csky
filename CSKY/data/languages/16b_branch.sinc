@@ -1,0 +1,31 @@
+i16_j_offsetSP_O1: label is i16_j_sbit = 0b0 & i16_j_soffset [label = inst_start + (i16_j_soffset<<1);] { export *[ram]:4 label; }
+i16_j_offsetSP_O1: label is i16_j_sbit = 0b1 & i16_j_soffset [label = inst_start - (0x400 - (i16_j_soffset<<1));] { export *[ram]:4 label; }
+
+# bt
+:bt i16_j_offsetSP_O1 is i16_optype = 0b00 & i16_4op = 0b0010 & i16_j_offsetSP_O1 {
+    if($(cf)==1) goto i16_j_offsetSP_O1;
+}
+# bf
+:bf i16_j_offsetSP_O1 is i16_optype = 0b00 & i16_4op = 0b0011 & i16_j_offsetSP_O1 {
+    if($(cf)==0) goto i16_j_offsetSP_O1;
+}
+
+# br 16 bit
+#:br [label] is i16_optype = 0b00 & i16_4op = 0b0001 & i16_j_offset [label = inst_start + ((i16_j_offset)<<1);] {
+#    local dest:4 = *[ram]:4 label;
+#    goto dest;
+#}
+:br i16_j_offsetSP_O1 is i16_optype = 0b00 & i16_4op = 0b0001 & i16_j_offsetSP_O1 {
+    goto i16_j_offsetSP_O1;
+}
+# jsr
+:jsr i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1110 & i16_r4_ry = 0b1111 & i16_r4_sop = 0b01 & i16_r4_rx {
+    r15 = inst_next;
+    local dest:4 = i16_r4_rx & 0xfffffffe;
+    call [dest];
+}
+# rts
+:rts is i16_optype = 0b01 & i16_4op = 0b1110 & i16_r4_sop = 0b00 & i16_r4_rx = 0b1111 & i16_r4_ry = 0b0000 {
+    local dest:4 = r15 & 0xfffffffe;
+    return [dest];
+}

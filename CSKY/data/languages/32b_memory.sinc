@@ -1,0 +1,147 @@
+
+# Immediate operand offset access Part
+with : i32_op = 0b0110 {
+    :ld.b i32_imm12_rz, (i32_imm12_rx, i32_imm12_imm) is i32_imm12_sop = 0b0000 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm {
+        i32_imm12_rz = zext(*:1 (i32_imm12_rx + i32_imm12_imm));
+    }
+    :ld.bs i32_imm12_rz, (i32_imm12_rx, i32_imm12_imm) is i32_imm12_sop = 0b0100 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm {
+        i32_imm12_rz = sext(*:1 (i32_imm12_rx + i32_imm12_imm));
+    }
+    :ld.h i32_imm12_rz, (i32_imm12_rx, disp) is i32_imm12_sop = 0b0001 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [disp = (i32_imm12_imm<<1);] {
+        i32_imm12_rz = zext(*:2 (i32_imm12_rx + disp));
+    }
+    :ld.hs i32_imm12_rz, (i32_imm12_rx, disp) is i32_imm12_sop = 0b0101 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [disp = (i32_imm12_imm<<1);] {
+        i32_imm12_rz = sext(*:2 (i32_imm12_rx + disp));
+    }
+    :ld.w i32_imm12_rz, (i32_imm12_rx, disp) is i32_imm12_sop = 0b0010 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [disp = (i32_imm12_imm<<2);] {
+        i32_imm12_rz = *:4 (i32_imm12_rx + disp);
+    }
+    # ld.d
+    :ld.d i32_imm12_rz, (i32_imm12_rx, disp) is i32_imm12_sop = 0b0011 & i32_imm12_rz & i32_imm12_rz_A1 & i32_imm12_rx & i32_imm12_imm [disp = (i32_imm12_imm<<2);] {
+        i32_imm12_rz = *:4 (i32_imm12_rx + disp);
+        i32_imm12_rz_A1 = *:4 (i32_imm12_rx + disp+4);
+    }
+}
+
+with : i32_op = 0b0111 {
+    :st.b i32_imm12_rz, (i32_imm12_rx, i32_imm12_imm) is i32_imm12_sop = 0b0000 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm {
+        *:1 (i32_imm12_rx + i32_imm12_imm) = i32_imm12_rz:1;
+    }
+    :st.h i32_imm12_rz, (i32_imm12_rx, disp) is i32_imm12_sop = 0b0001 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [disp = (i32_imm12_imm<<1);] {
+        *:2 (i32_imm12_rx + disp) = i32_imm12_rz:2;
+    }
+    :st.w i32_imm12_rz, (i32_imm12_rx, disp) is i32_imm12_sop = 0b0010 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [disp = (i32_imm12_imm<<2);] {
+        *:4 (i32_imm12_rx + disp) = i32_imm12_rz:4;
+    }
+    :st.d i32_imm12_rz, (i32_imm12_rx, disp) is i32_imm12_sop = 0b0011 & i32_imm12_rz & i32_imm12_rz_A1 & i32_imm12_rx & i32_imm12_imm [disp = (i32_imm12_imm<<2);] {
+        *:4 (i32_imm12_rx + disp) = i32_imm12_rz:4;
+        *:4 (i32_imm12_rx + disp+4) = i32_imm12_rz_A1:4;
+    }
+}
+
+# Vector register offset access Part
+vector_offset: 0 is i32_r_pcode = 0b00001 {export 0:4;}
+vector_offset: 1 is i32_r_pcode = 0b00010 {export 1:4;}
+vector_offset: 2 is i32_r_pcode = 0b00100 {export 2:4;}
+vector_offset: 3 is i32_r_pcode = 0b01000 {export 3:4;}
+
+with : i32_op = 0b0100 {
+    :ldr.b i32_r_rz,(i32_r_rx, i32_r_ry<<vector_offset) is i32_r_sop = 0b000000 & vector_offset & i32_r_rz & i32_r_rx & i32_r_ry {
+        local tmp:4 = i32_r_rx+(i32_r_ry<<vector_offset);
+        i32_r_rz = zext(*:1 tmp);
+    }
+    :ldr.bs i32_r_rz,(i32_r_rx, i32_r_ry<<vector_offset) is i32_r_sop = 0b000100 & vector_offset & i32_r_rz & i32_r_rx & i32_r_ry {
+        local tmp:4 = i32_r_rx+(i32_r_ry<<vector_offset);
+        i32_r_rz = sext(*:1 tmp);
+    }
+    :ldr.h i32_r_rz,(i32_r_rx, i32_r_ry<<vector_offset) is i32_r_sop = 0b000001 & vector_offset & i32_r_rz & i32_r_rx & i32_r_ry {
+        local tmp:4 = i32_r_rx+(i32_r_ry<<vector_offset);
+        i32_r_rz = zext(*:2 tmp);
+    }
+    :ldr.hs i32_r_rz,(i32_r_rx, i32_r_ry<<vector_offset) is i32_r_sop = 0b000101 & vector_offset & i32_r_rz & i32_r_rx & i32_r_ry {
+        local tmp:4 = i32_r_rx+(i32_r_ry<<vector_offset);
+        i32_r_rz = sext(*:2 tmp);
+    }
+    :ldr.w i32_r_rz,(i32_r_rx, i32_r_ry<<vector_offset) is i32_r_sop = 0b000010 & vector_offset & i32_r_rz & i32_r_rx & i32_r_ry {
+        local tmp:4 = i32_r_rx+(i32_r_ry<<vector_offset);
+        i32_r_rz = *:4 tmp;
+    }
+}
+with : i32_op = 0b0101 {
+    :str.b i32_r_rz,(i32_r_rx, i32_r_ry<<vector_offset) is i32_r_sop = 0b000000 & vector_offset & i32_r_rz & i32_r_rx & i32_r_ry {
+        local tmp:4 = i32_r_rx+(i32_r_ry<<vector_offset);
+        *:1 tmp = i32_r_rz:1;
+    }
+    :str.h i32_r_rz,(i32_r_rx, i32_r_ry<<vector_offset) is i32_r_sop = 0b000001 & vector_offset & i32_r_rz & i32_r_rx & i32_r_ry {
+        local tmp:4 = i32_r_rx+(i32_r_ry<<vector_offset);
+        *:2 tmp = i32_r_rz:2;
+    }
+    :str.w i32_r_rz,(i32_r_rx, i32_r_ry<<vector_offset) is i32_r_sop = 0b000010 & vector_offset & i32_r_rz & i32_r_rx & i32_r_ry {
+        local tmp:4 = i32_r_rx+(i32_r_ry<<vector_offset);
+        *:4 tmp = i32_r_rz;
+    }
+}
+
+
+# Multi-register access Part
+#push
+push32list1: is i32_bit_0003 = 0x0 {}
+push32list1: {r4} is i32_bit_0003 = 0x1 & r4 {push(r4);}
+push32list1: {r4,r5} is i32_bit_0003 = 0x2 & r4 & r5 {push(r4); push(r5);}
+push32list1: {r4,r5,r6} is i32_bit_0003 = 0x3 & r4 & r5 & r6 {push(r4); push(r5); push(r6);}
+push32list1: {r4,r5,r6,r7} is i32_bit_0003 = 0x4 & r4 & r5 & r6 & r7 {push(r4); push(r5); push(r6); push(r7);}
+push32list1: {r4,r5,r6,r7,r8} is i32_bit_0003 = 0x5 & r4 & r5 & r6 & r7 & r8 {push(r4); push(r5); push(r6); push(r7); push(r8);}
+push32list1: {r4,r5,r6,r7,r8,r9} is i32_bit_0003 = 0x6 & r4 & r5 & r6 & r7 & r8 & r9 {push(r4); push(r5); push(r6); push(r7); push(r8); push(r9);}
+push32list1: {r4,r5,r6,r7,r8,r9,r10} is i32_bit_0003 = 0x7 & r4 & r5 & r6 & r7 & r8 & r9 & r10 {push(r4); push(r5); push(r6); push(r7); push(r8); push(r9); push (r10);}
+push32list1: {r4,r5,r6,r7,r8,r9,r10,r11} is i32_bit_0003 = 0x8 & r4 & r5 & r6 & r7 & r8 & r9 & r10 & r11 {push(r4); push(r5); push(r6); push(r7); push(r8); push(r9); push (r10); push(r11);}
+
+push32lr: is i32_bit_0404 = 0b0 {}
+push32lr:r15 is i32_bit_0404 = 0b1 & r15 {push(r15);}
+push32lr:, r15 is i32_bit_0404 = 0b1 & i32_bit_0003 != 0x0 & r15 {push(r15);}
+
+push32list2: is i32_bit_0507 = 0x0 {}
+push32list2: {r16} is i32_bit_0507 = 0x1 & r16 {push(r16);}
+push32list2: {r16,r17} is i32_bit_0507 = 0x2 & r16 & r17 {push(r16); push(r17);}
+
+push32r28: is i32_bit_0808 = 0b0 {}
+push32r28:r28 is i32_bit_0808 = 0b1 & r28 {push(r28);}
+push32r28:, r28 is i32_bit_0808 = 0b1 & (i32_bit_0003 != 0x0 | i32_bit_0404 != 0x0 | i32_bit_0507 != 0) & r28 {push(r28);}
+
+:push push32list1 push32lr push32list2 push32r28 is i32_op = 0b1010 & i32_bit_2125 = 0b11111 & i32_bit_1620 = 0x0 & i32_bit_0915 = 0x0 & push32list1 & push32lr & push32list2 & push32r28 {
+    build push32list1;
+    build push32lr;
+    build push32list2;
+    build push32r28;
+}
+
+#pop
+pop32list1: is i32_bit_0003 = 0x0 {}
+pop32list1: {r4} is i32_bit_0003 = 0x1 & r4 {pop(r4);}
+pop32list1: {r4,r5} is i32_bit_0003 = 0x2 & r4 & r5 {pop(r4); pop(r5);}
+pop32list1: {r4,r5,r6} is i32_bit_0003 = 0x3 & r4 & r5 & r6 {pop(r4); pop(r5); pop(r6);}
+pop32list1: {r4,r5,r6,r7} is i32_bit_0003 = 0x4 & r4 & r5 & r6 & r7 {pop(r4); pop(r5); pop(r6); pop(r7);}
+pop32list1: {r4,r5,r6,r7,r8} is i32_bit_0003 = 0x5 & r4 & r5 & r6 & r7 & r8 {pop(r4); pop(r5); pop(r6); pop(r7); pop(r8);}
+pop32list1: {r4,r5,r6,r7,r8,r9} is i32_bit_0003 = 0x6 & r4 & r5 & r6 & r7 & r8 & r9 {pop(r4); pop(r5); pop(r6); pop(r7); pop(r8); pop(r9);}
+pop32list1: {r4,r5,r6,r7,r8,r9,r10} is i32_bit_0003 = 0x7 & r4 & r5 & r6 & r7 & r8 & r9 & r10 {pop(r4); pop(r5); pop(r6); pop(r7); pop(r8); pop(r9); pop (r10);}
+pop32list1: {r4,r5,r6,r7,r8,r9,r10,r11} is i32_bit_0003 = 0x8 & r4 & r5 & r6 & r7 & r8 & r9 & r10 & r11 {pop(r4); pop(r5); pop(r6); pop(r7); pop(r8); pop(r9); pop (r10); pop(r11);}
+
+pop32lr: is i32_bit_0404 = 0b0 {}
+pop32lr:r15 is i32_bit_0404 = 0b1 & r15 {pop(r15);}
+pop32lr:, r15 is i32_bit_0404 = 0b1 & i32_bit_0003 != 0x0 & r15 {pop(r15);}
+
+pop32list2: is i32_bit_0507 = 0x0 {}
+pop32list2: {r16} is i32_bit_0507 = 0x1 & r16 {pop(r16);}
+pop32list2: {r16,r17} is i32_bit_0507 = 0x2 & r16 & r17 {pop(r16); pop(r17);}
+
+pop32r28: is i32_bit_0808 = 0b0 {}
+pop32r28:r28 is i32_bit_0808 = 0b1 & r28 {pop(r28);}
+pop32r28:, r28 is i32_bit_0808 = 0b1 & (i32_bit_0003 != 0x0 | i32_bit_0404 != 0x0 | i32_bit_0507 != 0) & r28 {pop(r28);}
+
+:pop pop32list1 pop32lr pop32list2 pop32r28 is i32_op = 0b1010 & i32_bit_2125 = 0b11110 & i32_bit_1620 = 0x0 & i32_bit_0915 = 0x0 & pop32list1 & pop32lr & pop32list2 & pop32r28 {
+    local tmp:4 = r15 & 0xfffffffe;
+    build pop32list1;
+    build pop32lr;
+    build pop32list2;
+    build pop32r28;
+    return [tmp];
+}

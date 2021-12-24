@@ -1,0 +1,78 @@
+define token ins32(32)
+    i32_optype = (14,15) #(30,31)
+    i32_op = (10,13) #(26,29)
+
+    # i32_j_offset (0,25)
+    i32_j_offset_l = (16,31)
+    i32_j_offset_h = (0,9)
+    i32_j_offset_sh = (0,8)
+    i32_j_sbit = (9,9)
+
+    i32_imm18_rz = (5,9) #(21,25)
+    i32_imm18_sop = (2,4) #(18,20)
+    # i32_imm18_imm (0,17)
+    i32_imm18_imm_l = (16,31)
+    i32_imm18_imm_h = (0,1)
+    i32_imm18_imm_nsh = (0,0)
+    i32_imm18_sbit = (1,1)
+
+
+    i32_imm16_rz = (5,9) #(21,25)
+    i32_imm16_sop = (5,9) #(21,25)
+    i32_imm16_rx = (0,4) #(16,20)
+    i32_imm16_imm = (16,31) #(0,15)
+    i32_imm16_nsimm = (16,30)
+    i32_imm16_sbit = (31,31)
+
+    i32_imm12_rz = (5,9) #(21,25)
+    i32_imm12_rz_A1 = (5,9)
+    i32_imm12_ry = (5,9) #(21,25)
+    i32_imm12_rx = (0,4) #(16,20)
+    i32_imm12_sop = (28,31) #(12,15)
+    i32_imm12_imm = (16,27) #(0,11)
+
+    i32_r_ry = (5,9) #(21,25)
+    i32_r_imm5 = (5,9) #(21,25)
+    i32_r_rx = (0,4) #(16,20)
+    i32_r_sop = (26,31) #(10,15)
+    i32_r_pcode = (21,25) #(5,9)
+    i32_r_rz = (16,20) #(0,4)
+
+    i32_bit_0003 = (16,19)
+    i32_bit_0004 = (16,20)
+    i32_bit_0404 = (20,20)
+    i32_bit_0507 = (21,23)
+    i32_bit_0808 = (24,24)
+
+    i32_bit_0915 = (25,31)
+    i32_bit_1620 = (0,4)
+    i32_bit_2125 = (5,9)
+;
+
+
+attach variables [i32_r_rz i32_r_rx i32_r_ry    i32_imm12_rz i32_imm12_rx i32_imm12_ry    i32_imm16_rz i32_imm16_rx    i32_imm18_rz] [r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 sp r15 r16 r17 r18 r19 r20 r21 r22 r23 r24 r25 r26 r27 r28 r29 r30 r31];
+attach variables [i32_imm12_rz_A1] [r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 sp r15 r16 r17 r18 r19 r20 r21 r22 r23 r24 r25 r26 r27 r28 r29 r30 r31 _];
+
+i32_j_offset: t is i32_j_sbit = 0b0 & i32_j_offset_sh & i32_j_offset_l [t = inst_start + (((i32_j_offset_sh<<16) + i32_j_offset_l)<<1);] { export *[ram]:4 t;}
+i32_j_offset: t is i32_j_sbit = 0b1 & i32_j_offset_sh & i32_j_offset_l [t = inst_start - (0x4000000-(((i32_j_offset_sh<<16) + i32_j_offset_l)<<1));] { export *[ram]:4 t;}
+
+i32_imm18_imm: t is i32_imm18_imm_h & i32_imm18_imm_l [t = (i32_imm18_imm_h<<16)+i32_imm18_imm_l;] {export t;}
+i32_imm18_imm_A1: t is i32_imm18_imm_h & i32_imm18_imm_l [t = (i32_imm18_imm_h<<16)+i32_imm18_imm_l+1;] {local tmp:4 = t; export tmp;}
+
+i32_imm18_immSP_O1: t is i32_imm18_sbit = 0b0 & i32_imm18_imm_nsh & i32_imm18_imm_l [t = inst_start + (((i32_imm18_imm_nsh<<16)+i32_imm18_imm_l)<<1);] {export *[ram]:4 t;}
+i32_imm18_immSP_O1: t is i32_imm18_sbit = 0b1 & i32_imm18_imm_nsh & i32_imm18_imm_l [t = inst_start - (0x80000-(((i32_imm18_imm_nsh<<16)+i32_imm18_imm_l)<<1));] {export *[ram]:4 t;}
+
+i32_imm18_immSPD_O1: t is i32_imm18_sbit = 0b0 & i32_imm18_imm_nsh & i32_imm18_imm_l  [t = inst_start + (((i32_imm18_imm_nsh<<16)+i32_imm18_imm_l)<<1);] {local tmp:4 = t; export tmp;}
+i32_imm18_immSPD_O1: t is i32_imm18_sbit = 0b1 & i32_imm18_imm_nsh & i32_imm18_imm_l  [t = inst_start - (0x80000-(((i32_imm18_imm_nsh<<16)+i32_imm18_imm_l)<<1));] {local tmp:4 = t; export tmp;}
+
+i32_imm16_immSP_O1: label is i32_imm16_sbit = 0b0 & i32_imm16_nsimm [label = inst_start + (i32_imm16_nsimm << 1);] {export *[ram]:4 label; }
+i32_imm16_immSP_O1: label is i32_imm16_sbit = 0b1 &i32_imm16_nsimm [label = inst_start - (0x10000-(i32_imm16_nsimm << 1));] {export *[ram]:4 label; }
+
+with : i32_optype = 0b11 {
+@include "32b_data.sinc"
+@include "32b_branch.sinc"
+@include "32b_memory.sinc"
+#@include "32b_coproc.sinc"
+#@include "32b_priv.sinc"
+#@include "32b_special.sinc"
+}

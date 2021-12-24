@@ -1,0 +1,188 @@
+# add-substract Part
+:addu i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_r_rz {
+    i32_r_rz = i32_r_rx + i32_r_ry;
+}
+:addc i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b00010 & i32_r_ry & i32_r_rx & i32_r_rz {
+    set_cf(carry(i32_r_rx, i32_r_ry));
+    i32_r_rz = i32_r_rx + i32_r_ry;
+}
+# addi instruction ----1
+:addi i32_imm12_rz, i32_imm12_rx, oimm is i32_op = 0b1001 & i32_imm12_sop = 0b0000 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [oimm = (i32_imm12_imm+1);] {
+    i32_imm12_rz = i32_imm12_rx + oimm:4;
+}
+# addi instruction ----2
+:addi i32_imm18_rz, r28, i32_imm18_imm_A1 is i32_op = 0b0011 & i32_imm18_sop = 0b111 & i32_imm18_rz & i32_imm18_imm_A1 & r28 {
+    i32_imm18_rz = r28 + i32_imm18_imm_A1;
+}
+
+:subu32 i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
+    i32_r_rz = i32_r_rx - i32_r_ry;
+}
+:subc i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b01000 & i32_r_rz & i32_r_rx & i32_r_ry {
+    set_cf(!sborrow(i32_r_rx, i32_r_ry));
+    i32_r_rz = i32_r_rx - i32_r_ry;
+}
+:subi i32_imm12_rz, i32_imm12_rx, oimm is i32_op = 0b1001 & i32_imm12_sop = 0b0001 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [oimm = (i32_imm12_imm+1);] {
+    i32_imm12_rz = i32_imm12_rx - oimm;
+}
+
+# incf/inct/decf/dect two registers second format rz is ry(21,25)
+with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
+    :incf i32_r_ry, i32_r_rx, i32_bit_0004 is i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_bit_0004 {
+        if($(cf)!=0) goto <end>;
+        i32_r_ry = i32_r_rx + i32_bit_0004;
+        <end>
+    }
+    :inct i32_r_ry, i32_r_rx, i32_bit_0004 is i32_r_pcode = 0b00010 & i32_r_ry & i32_r_rx & i32_bit_0004 {
+        if($(cf)!=1) goto <end>;
+        i32_r_ry = i32_r_rx + i32_bit_0004;
+        <end>
+    }
+    :decf i32_r_ry, i32_r_rx, i32_bit_0004 is i32_r_pcode = 0b00100 & i32_r_ry & i32_r_rx & i32_bit_0004 {
+        if($(cf)!=0) goto <end>;
+        i32_r_ry = i32_r_rx - i32_bit_0004;
+        <end>
+    }
+    :dect i32_r_ry, i32_r_rx, i32_bit_0004 is i32_r_pcode = 0b01000 & i32_r_ry & i32_r_rx & i32_bit_0004 {
+        if($(cf)!=1) goto <end>;
+        i32_r_ry = i32_r_rx - i32_bit_0004;
+        <end>
+    }
+}
+
+# data transfer Part
+# mov should never show??
+:mov i32_r_rz, i32_r_rx is i32_op = 0b0001 & i32_r_sop = 0b010010 & i32_r_pcode = 0b00001 & i32_r_imm5 = 0b00000 & i32_r_rx & i32_r_rz {
+    i32_r_rz = i32_r_rx;
+}
+# movi second format single register imm16 (16,20) is rz
+:movi i32_imm16_rx, i32_imm16_imm is i32_op = 0b1010 & i32_imm16_sop = 0b10000 & i32_imm16_rx & i32_imm16_imm {
+    i32_imm16_rx = i32_imm16_imm;
+}
+# lrw same as above
+:lrw i32_imm16_rx, label is i32_op = 0b1010 & i32_imm16_sop = 0b10100 & i32_imm16_rx & i32_imm16_imm [label = ((i32_imm16_imm<<2) + inst_start) & 0xfffffffc;] {
+    local tmp:4 = ((i32_imm16_imm<<2) + inst_start) & 0xfffffffc;
+    i32_imm16_rx = *:4 tmp;
+}
+# grs
+:grs i32_imm18_rz, i32_imm18_immSPD_O1 is i32_op = 0b0011 & i32_imm18_sop = 0b011 & i32_imm18_rz & i32_imm18_immSPD_O1 {
+    i32_imm18_rz = zext(i32_imm18_immSPD_O1);
+}
+
+# logical operation Part
+with : i32_op = 0b0001 {
+    with : i32_r_sop = 0b001000 {
+        :and i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_ry {
+            i32_r_rz = i32_r_rx & i32_r_ry;
+        }
+        :andn i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_ry {
+            local tmp:4 = i32_r_rx & i32_r_ry;
+            i32_r_rz = ~tmp;
+        }
+    }
+    with : i32_r_sop = 0b001001 {
+        :or i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_ry {
+            i32_r_rz = i32_r_rx | i32_r_ry;
+        }
+        :xor i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_ry {
+            i32_r_rz = i32_r_rx ^ i32_r_ry;
+        }
+        :nor i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
+            local tmp:4 = i32_r_rx | i32_r_ry;
+            i32_r_rz = ~tmp;
+        }
+        :not i32_r_rz, i32_r_rx is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_rx = i32_r_ry {
+            i32_r_rz = ~i32_r_rx;
+        }
+    }
+}
+with : i32_op = 0b1001 {
+    :andi i32_imm12_rz, i32_imm12_rx, i32_imm12_imm is i32_imm12_sop = 0b0010 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm {
+        i32_imm12_rz = i32_imm12_rx | zext(i32_imm12_imm:4);
+    }
+    :andni i32_imm12_rz, i32_imm12_rx, i32_imm12_imm is i32_imm12_sop = 0b0011 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm {
+        local tmp:4 = i32_imm12_rx | zext(i32_imm12_imm:4);
+        i32_imm12_rz = ~tmp;
+    }
+    :xori i32_imm12_rz, i32_imm12_rx, i32_imm12_imm is i32_imm12_sop = 0b0100 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm {
+        i32_imm12_rz = i32_imm12_rx ^ zext(i32_imm12_imm:4);
+    }
+}
+:ori i32_imm16_rz, i32_imm16_rx, i32_imm16_imm is i32_op = 0b1011 & i32_imm16_rz & i32_imm16_rx & i32_imm16_imm {
+    i32_imm16_rz = i32_imm16_rx | zext(i32_imm16_imm:4);
+}
+
+
+# shift Part
+# lsl
+:lsl i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b010000 & i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_r_rz {
+    i32_r_rz = (i32_r_rx << (i32_r_ry[0,6]));
+}
+# lsli i32_r_imm5 should in [1-31]
+:lsli i32_r_rz, i32_r_rx, i32_r_imm5 is i32_op = 0b0001 & i32_r_sop = 0b010010 & i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 {
+    i32_r_rz = (i32_r_rx << (i32_r_imm5));
+}
+
+# bit operation Part
+with : i32_op = 0b0001 & i32_r_sop = 0b001010 {
+    :bclri i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 {
+        local tmp = i32_r_rx & (1<<i32_r_imm5);
+        if (tmp==0) goto <end>;
+        i32_r_rz = i32_r_rx - (1<<i32_r_imm5);
+        <end>
+    }
+    :bseti i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_imm5 {
+        local tmp = i32_r_rx & (1<<i32_r_imm5);
+        if (tmp!=0) goto <end>;
+        i32_r_rz = i32_r_rx + (1<<i32_r_imm5);
+        <end>
+    }
+    :btsti i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00100 & i32_bit_0004 = 0b00000 & i32_r_rx & i32_r_imm5 {
+        local tmp = i32_r_rx & (1<<i32_r_imm5);
+        set_cf(tmp!=0);
+    }
+}
+
+
+# compare Part
+# cmpne/cmphs/cmplt
+with : i32_op = 0b0001 {
+    with : i32_r_sop = 0b000001 {
+        :cmpne i32_r_rx, i32_r_ry is i32_r_pcode = 0b00100 & i32_r_rz = 0b00000 & i32_r_rx & i32_r_ry {
+            set_cf(i32_r_rx!=i32_r_ry);
+        }
+        :cmphs i32_r_rx, i32_r_ry is i32_r_pcode = 0b00001 & i32_r_rz = 0b00000 & i32_r_rx & i32_r_ry {
+            set_cf(i32_r_rx>=i32_r_ry);
+        }
+        :cmplt i32_r_rx, i32_r_ry is i32_r_pcode = 0b00010 & i32_r_rz = 0b00000 & i32_r_rx & i32_r_ry {
+            set_cf(i32_r_rx s< i32_r_ry);
+        }
+    }
+}
+# cmpnei/cmphsi/cmplti
+with : i32_op = 0b1010 {
+    :cmpnei i32_imm16_rx, i32_imm16_imm is i32_imm16_sop = 0b11010 & i32_imm16_rx & i32_imm16_imm {
+        set_cf(i32_imm16_rx!=i32_imm16_imm);
+    }
+    :cmphsi i32_imm16_rx, oimm is i32_imm16_sop = 0b11000 & i32_imm16_rx & i32_imm16_imm [oimm = i32_imm16_imm+1;] {
+        set_cf(i32_imm16_rx!=oimm);
+    }
+    :cmplti i32_imm16_rx, oimm is i32_imm16_sop = 0b11001 & i32_imm16_rx & i32_imm16_imm [oimm = i32_imm16_imm+1;] {
+        set_cf(i32_imm16_rx s< oimm);
+    }
+}
+
+# multiply-divide Part
+with : i32_op = 0b0001 {
+    :mult i32_r_rz, i32_r_rx, i32_r_ry is i32_r_sop = 0b100001 & i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_ry {
+        i32_r_rz = i32_r_rx * i32_r_ry;
+    }
+    with : i32_r_sop = 0b100000 {
+        :divs i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_ry {
+            i32_r_rz = i32_r_rx s/ i32_r_ry;
+        }
+        :divu i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_ry {
+            i32_r_rz = i32_r_rx / i32_r_ry;
+        }
+    }
+}

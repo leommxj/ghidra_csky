@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<!-- C-SKY v2 processor specification -->
+
+<processor_spec>
+  <programcounter register="pc"/>
+</processor_spec>

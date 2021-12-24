@@ -1,0 +1,11 @@
+# register and others
+@include "csky_v2.sinc"
+
+# 16 bit instruction
+@include "16b.sinc"
+
+# 32 bit instruction
+@include "32b.sinc"
+
+# floating point instruction
+#@include "float.sinc"

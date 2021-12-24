@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<!-- C-SKY v2 -->
+
+<language_definitions>
+  <language processor="C-SKY v2"
+            endian="little"
+            size="32"
+            variant="default"
+            version="0.1"
+            slafile="csky_v2.sla"
+            processorspec="csky_v2.pspec"
+            id="CSKY_V2:LE:32:default">
+    <!--
+          Notes:
+            - size: memory address size
+            - variant: name of the processor variant
+            - id: Ghidra processor identifier as 'processor:endian:size:variant'
+    -->
+    <description>C-SKY v2 little endian</description>
+    <compiler name="default" spec="csky_v2.cspec" id="default"/>
+  </language>
+</language_definitions>

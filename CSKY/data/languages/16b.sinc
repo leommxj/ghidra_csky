@@ -1,0 +1,72 @@
+
+define token ins16(16)
+    i16_optype = (14,15)
+    i16_4op = (10,13)
+    i16_3op = (11,13)
+
+    #J type 4bits op & optype = 0b00
+    i16_j_offset = (0,9)
+    i16_j_sbit = (9,9)
+    i16_j_soffset = (0,8)
+
+    # I type
+    # imm3 3bits op & optype = 0b01
+    i16_imm3_rx = (8,10)
+    i16_imm3_rz = (5,7)
+    i16_imm3_imm = (2,4)
+    i16_imm3_sop = (0,1)
+    # imm5 3bits op  
+    ## optype = 0b01 || optype = 0b10
+    i16_imm5_rx = (8,10)
+    i16_imm5_imm3 = (8,10)
+    i16_imm5_rz = (5,7)
+    i16_imm5_imm = (0,4)
+    ## optype = 0b00 
+    i16_imm5_sop = (5,7)
+    # imm7 4bits op & optype = 0b00 ; imm = immh<<5 + imml; immh 2bits
+    i16_imm7_immh = (8,9)
+    i16_imm7_sop = (5,7)
+    i16_imm7_rz = (5,7)
+    i16_imm7_imml = (0,4)
+    # imm8 3bits op 
+    ## optype = 0b00
+    i16_imm8_rx = (8,10)
+    i16_imm8_rz = (8,10)
+    i16_imm8_imm = (0,7)
+    ## optype = 0b10 ; imm = immh<<5 + imml; immh 3bits
+    i16_imm8s_immh = (8,10)
+    i16_imm8s_rz = (5,7)
+    i16_imm8s_imml = (0,4)
+
+    # R Type
+    # 3bits op & optype = 0b01
+    i16_r3_rx = (8,10)
+    i16_r3_rz = (5,7)
+    i16_r3_ry = (2,4)
+    i16_r3_sop = (0,1)
+    # 4bits op & optype = 0b01
+    i16_r4_rz = (6,9)
+    i16_r4_ry = (6,9)
+    i16_r4_rx = (2,5)
+    i16_r4_sop = (0,1)
+
+    # Raw Bits
+    i16_bit_0404 = (4,4)
+    i16_bit_0003 = (0,3)
+    i16_bit_0509 = (5,9)
+;
+
+attach variables [i16_r4_rz i16_r4_ry i16_r4_rx] [r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 sp r15];
+attach variables [i16_r3_rz i16_r3_ry i16_r3_rx    i16_imm8_rz i16_imm8_rx i16_imm3_rz i16_imm3_rx i16_imm5_rz i16_imm5_rx i16_imm7_rz] [r0 r1 r2 r3 r4 r5 r6 r7];
+
+
+@include "16b_data.sinc"
+
+@include "16b_branch.sinc"
+
+@include "16b_memory.sinc"
+
+# bkpt
+:bpkt is i16_optype = 0b00 & i16_4op = 0b0000 & i16_j_offset = 0 {
+    #break
+}

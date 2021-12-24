@@ -1,0 +1,47 @@
+define endian=little;
+define alignment=1;
+
+define space ram      type=ram_space      size=4  default;
+define space register type=register_space size=4;
+
+# General-purpose registers
+define register offset=0x00 size=4
+    [r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 sp r15 r16 r17 r18 r19 r20 r21 r22 r23 r24 r25 r26 r27 r28 r29 r30 r31];
+#define register offset=0x00 size=4
+#    [a0 a1 a2 a3 l0 l1 l2 l3 l4 l5 l6 l7 t0 t1 sp lr l8 l9 t2 t3 t4 t5 t6 t7 t8 t9 _ _ rdb rtb svbr tls];
+@define r14 "sp"
+
+# Acc registers
+define register offset=0x100 size=4 [hi lo];
+
+# Control registers
+define register offset=0x200 size=4 [PSR VBR EPSR FPSR EPC FPC GCR GSR CPID CCR CAPR PACR RID];
+@define cf "PSR[31,1]"
+
+# Alternative registers
+define register offset=0x300 size=4
+    [r0a r1a r2a r3a r4a r5a r6a r7a r8a r9a r10a r11a r12a r13a r14a r15a r14_spv];
+@define sp_spv "r14_spv"
+
+# Program Counter
+define register offset=0x2000 size=4 [pc];
+
+
+# macros
+macro set_cf(result){
+    if (result) goto <true>;
+        $(cf) = 0b0;
+        goto <end>;
+    <true>
+        $(cf) = 0b1;
+    <end>
+}
+
+macro push(x){
+	sp = sp - 4;
+	*:4 sp = x;
+}
+macro pop(x){
+	x = *:4 sp;
+	sp = sp + 4;
+}

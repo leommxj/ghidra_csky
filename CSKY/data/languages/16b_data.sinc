@@ -1,0 +1,207 @@
+
+# add-substract Part
+# addu 16 bit instruction ----1
+:addu i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1000 & i16_r4_sop = 0b00 & i16_r4_rz & i16_r4_rx {
+    i16_r4_rz = i16_r4_rz + i16_r4_rx;
+}
+# addu 16 bit instruction ----2
+:addu i16_r3_rz, i16_r3_rx is i16_optype = 0b01 & i16_3op = 0b011 & i16_r3_sop = 0b00 & i16_r3_rz & i16_r3_rx {
+    i16_r3_rz = i16_r3_rz + i16_r3_rx;
+}
+
+# addc 16 bit 
+:addc i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1000 & i16_r4_sop = 0b01 & i16_r4_rz & i16_r4_rx {
+    set_cf(carry(i16_r4_rz, i16_r4_rx));
+    i16_r4_rz = i16_r4_rz + i16_r4_rx;
+}
+
+# addi 16 bit instruction ----1
+:addi i16_imm8_rz, oimm is i16_optype = 0b00 & i16_3op = 0b100 & i16_imm8_rz & i16_imm8_imm [oimm = (i16_imm8_imm+1);] {
+    i16_imm8_rz = i16_imm8_rz + oimm:4;
+}
+# addi 16 bit instruction ----2
+:addi i16_imm3_rz, i16_imm3_rx, oimm is i16_optype = 0b01 & i16_3op = 0b011 & i16_imm3_sop = 0b10 & i16_imm3_rz & i16_imm3_rx & i16_imm3_imm [oimm = (i16_imm3_imm+1);] {
+    i16_imm3_rz = i16_imm3_rz + oimm:4;
+}
+
+# addi(sp) 16 bit instruction ----1
+:addi i16_imm8_rz, sp, real_imm is i16_optype = 0b00 & i16_3op = 0b011 & sp & i16_imm8_rz & i16_imm8_imm [real_imm = (i16_imm8_imm<<2);] {
+    i16_imm8_rz = sp + real_imm;
+}
+# addi(sp) 16 bit instruction ----2
+:addi "sp", sp, real_imm is i16_optype = 0b00 & i16_4op = 0b0101 & i16_imm7_sop = 0b000 & sp & i16_imm7_immh & i16_imm7_imml [real_imm = ((i16_imm7_immh<<5)+i16_imm7_imml)<<2;] {
+    sp = sp + real_imm;
+}
+
+# subu 16 bit instruction ----1
+:subu i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1000 & i16_r4_sop = 0b10 & i16_r4_rz & i16_r4_rx {
+    i16_r4_rz = i16_r4_rz - i16_r4_rx;
+}
+# subu 16 bit instruction ----2
+:subu i16_r3_rz, i16_r3_rx, i16_r3_ry is i16_optype = 0b01 & i16_3op = 0b011 & i16_r3_rz & i16_r3_rx & i16_r3_ry {
+    i16_r3_rz = i16_r3_rx - i16_r3_ry;
+}
+# subc 16 bit
+:subc i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1000 & i16_r4_sop = 0b11 & i16_r4_rz & i16_r4_rx {
+    set_cf(!sborrow(i16_r4_rz, i16_r4_rx));
+    i16_r4_rz = i16_r4_rz - i16_r4_rx;
+}
+# subi instruction ----1
+:subi i16_imm8_rz, oimm is i16_optype = 0b00 & i16_3op = 0b101 & i16_imm8_rz & i16_imm8_imm [oimm = (i16_imm8_imm+1);] {
+    i16_imm8_rz = i16_imm8_rz - oimm;
+}
+# subi instruction ----2
+:subi i16_imm3_rz, i16_imm3_rx, oimm is i16_optype = 0b01 & i16_3op = 0b011 & i16_imm3_sop = 0b11 & i16_imm3_rx & i16_imm3_rz & i16_imm3_imm[oimm = (i16_imm3_imm+1);] {
+    i16_imm3_rz = i16_imm3_rx + oimm;
+}
+# subi(sp)
+:subi "sp", sp, imm is i16_optype = 0b00 & i16_4op = 0b0101 & i16_imm7_sop = 0b001 & sp & i16_imm7_immh & i16_imm7_imml [imm = (((i16_imm7_immh<<5)+i16_imm7_imml)<<2);] {
+    sp = sp - imm;
+}
+
+# logcial operation Part
+with : i16_optype = 0b01 & i16_4op = 0b1010 {
+    :and i16_r4_rz, i16_r4_rx is i16_r4_sop = 0b00 & i16_r4_rz & i16_r4_rx {
+        i16_r4_rz = i16_r4_rz & i16_r4_rx;
+    }
+    :andn i16_r4_rz, i16_r4_rx is i16_r4_sop = 0b01 & i16_r4_rz & i16_r4_rx {
+        local tmp:4 = i16_r4_rz & i16_r4_rx;
+        i16_r4_rz = ~tmp;
+    }
+}
+
+with : i16_optype = 0b01 & i16_4op = 0b1011 {
+    :or i16_r4_rz, i16_r4_rx is i16_r4_sop = 0b00 & i16_r4_rz & i16_r4_rx {
+        i16_r4_rz = i16_r4_rz | i16_r4_rx;
+    }
+    :xor i16_r4_rz, i16_r4_rx is i16_r4_sop = 0b01 & i16_r4_rz & i16_r4_rx {
+        i16_r4_rz = i16_r4_rz ^ i16_r4_rx;
+    }
+    :nor i16_r4_rz, i16_r4_rx is i16_r4_sop = 0b10 & i16_r4_rz & i16_r4_rx {
+        local tmp:4 = i16_r4_rz | i16_r4_rx;
+        i16_r4_rz = ~tmp;
+    }
+    :not i16_r4_rz is i16_r4_sop = 0b10 & i16_r4_rz & i16_r4_rz = i16_r4_rx {
+        i16_r4_rz = ~i16_r4_rz;
+    }
+}
+
+# data transfer Part
+# mov
+:mov i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1011 & i16_r4_sop = 0b11 & i16_r4_rz & i16_r4_rx {
+    i16_r4_rz = i16_r4_rx;
+}
+# movi
+:movi i16_imm8_rz, i16_imm8_imm is i16_optype = 0b00 & i16_3op = 0b110 & i16_imm8_rz & i16_imm8_imm {
+    i16_imm8_rz = i16_imm8_imm;
+}
+# lrw instruction ----1
+:lrw i16_imm7_rz, label is i16_optype = 0b00 & i16_4op = 0b0000 & i16_imm7_immh & i16_imm7_imml & i16_imm7_rz [label = (((0x80+(~((i16_imm7_immh<<5)+i16_imm7_imml)))<<2) + inst_start) & 0xfffffffc;] {
+    local tmp:4 = (((0x80+(~((i16_imm7_immh<<5)+i16_imm7_imml)))<<2) + inst_start) & 0xfffffffc;
+    i16_imm7_rz = *:4 (tmp);
+}
+# lrw instruction ----2
+:lrw i16_imm7_rz, label is i16_optype = 0b00 & i16_4op = 0b0100 & i16_imm7_immh & i16_imm7_imml & i16_imm7_rz [label = ((((i16_imm7_immh<<5)+i16_imm7_imml)<<2) + inst_start) & 0xfffffffc;] {
+    local tmp:4 = ((((i16_imm7_immh<<5)+i16_imm7_imml)<<2) + inst_start) & 0xfffffffc;
+    i16_imm7_rz = *:4 (tmp);
+}
+
+
+# shift Part
+# lsl six low bits of rx / rx[5:0] as shift value
+:lsl i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b00 & i16_r4_rz & i16_r4_rx {
+    i16_r4_rz = (i16_r4_rz<<(i16_r4_rx[0,6]));
+}
+# lsli
+:lsli i16_imm5_rz, i16_imm5_rx , i16_imm5_imm is i16_optype = 0b01 & i16_3op = 0b000 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
+    i16_imm5_rz = (i16_imm5_rx << (i16_imm5_imm));
+}
+# lsr
+:lsr i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b01 & i16_r4_rz & i16_r4_rx {
+    local tmp:4 = i16_r4_rx & 0x3f;
+    i16_r4_rz = i16_r4_rz >> tmp;
+}
+# lsri
+:lsri i16_imm5_rz, i16_imm5_rx, i16_imm5_imm is i16_optype = 0b01 & i16_3op = 0b001 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
+    if(i16_imm5_imm:4==0) goto <end>;
+    i16_imm5_rz = i16_imm5_rx >> i16_imm5_imm;
+    <end>
+}
+# asr six low bits of rx
+:asr i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b10 & i16_r4_rz & i16_r4_rx {
+    local tmp:4 = i16_r4_rx & 0x3f;
+    i16_r4_rz = i16_r4_rz s>> tmp;
+}
+# asri
+:asri i16_imm5_rz, i16_imm5_rx, i16_imm5_imm is i16_optype = 0b01 & i16_3op = 0b010 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
+    if(i16_imm5_imm:4==0) goto <end>;
+    i16_imm5_rz = i16_imm5_rx s>> i16_imm5_imm;
+    <end>
+}
+
+
+# compare Part
+# cmp* with register
+with : i16_optype = 0b01 & i16_4op = 0b1001 {
+    # cmphs
+    :cmphs i16_r4_rx, i16_r4_ry is i16_r4_sop = 0b00 & i16_r4_ry & i16_r4_rx {
+        set_cf(i16_r4_rx >= i16_r4_ry);
+    }
+    # cmpne
+    :cmpne i16_r4_rx, i16_r4_ry is i16_r4_sop = 0b10 & i16_r4_ry & i16_r4_rx {
+        set_cf(i16_r4_rx != i16_r4_ry);
+    }
+    # cmplt
+    :cmplt i16_r4_rx, i16_r4_ry is i16_r4_sop = 0b01 & i16_r4_ry & i16_r4_rx {
+        set_cf(i16_r4_rx s< i16_r4_ry);
+    }
+}
+# cmp* with imm
+with : i16_optype = 0b00 & i16_3op = 0b111 {
+    # cmphsi
+    :cmphsi i16_imm5_rx, oimm5 is i16_imm5_sop = 0b000 & i16_imm5_rx & i16_imm5_imm [oimm5 = i16_imm5_imm+1;] {
+        set_cf(i16_imm5_rx>=zext(oimm5:4));
+    }
+    # cmpnei
+    :cmpnei i16_imm5_rx, i16_imm5_imm is i16_imm5_sop = 0b010 & i16_imm5_rx & i16_imm5_imm {
+        set_cf(i16_imm5_rx!=zext(i16_imm5_imm:4));
+    }
+    # cmplti
+    :cmplti i16_imm5_rx, oimm5 is i16_imm5_sop = 0b001 & i16_imm5_rx & i16_imm5_imm [oimm5 = i16_imm5_imm+1;] {
+        set_cf(i16_imm5_rx s< oimm5:4);
+    }
+}
+
+# bit operation Part
+# rx is rz ,rz is sop
+with : i16_optype = 0b00 & i16_3op = 0b111 {
+    :bclri i16_imm5_rx, i16_imm5_imm is i16_imm5_sop = 0b100 & i16_imm5_rx & i16_imm5_imm {
+        local tmp = i16_imm5_rx & (1<<i16_imm5_imm);
+        if (tmp==0) goto <end>;
+        i16_imm5_rx = i16_imm5_rx - (1<<i16_imm5_imm);
+        <end>
+    }
+    :bseti i16_imm5_rx, i16_imm5_imm is i16_imm5_sop = 0b101 & i16_imm5_rx & i16_imm5_imm {
+        local tmp = i16_imm5_rx & (1<<i16_imm5_imm);
+        if (tmp!=0) goto <end>;
+        i16_imm5_rx = i16_imm5_rx + (1<<i16_imm5_imm);
+        <end>
+    }
+    :btsti i16_imm5_rx, i16_imm5_imm is i16_imm5_sop = 0b110 & i16_imm5_rx & i16_imm5_imm {
+        local tmp = i16_imm5_rx & (1<<i16_imm5_imm);
+        set_cf(tmp!=0);
+    }
+}
+
+
+
+# multiply-divide Part
+# mult/mulsh
+with : i16_optype = 0b01 & i16_4op = 0b1111 {
+    :mult i16_r4_rz, i16_r4_rx is i16_r4_sop = 0b00 & i16_r4_rz & i16_r4_rx {
+        i16_r4_rz = i16_r4_rx * i16_r4_rz;
+    }
+    :mulsh i16_r4_rz, i16_r4_rx is i16_r4_sop = 0b01 & i16_r4_rz & i16_r4_rx {
+        i16_r4_rz = zext(i16_r4_rx[0,16]) * zext(i16_r4_rz[0,16]);
+    }
+}
