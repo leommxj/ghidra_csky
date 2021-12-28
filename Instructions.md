@@ -33,14 +33,14 @@
 - [x] LSL32 Logical shift left
 - [x] LSLI32 Logical shift left immediate
 - [ ] LSLC32 Logical shift left immediate to C
-- [ ] LSR32 Logical shift right
-- [ ] LSRI32 Logical shift right immediate
+- [x] LSR32 Logical shift right
+- [x] LSRI32 Logical shift right immediate
 - [ ] LSRC32 Logical shift right immediate to C
 - [x] ASR32 Arithmetic shift right
 - [x] ASRI32 Arithmetic shift right immediate
 - [ ] ASRC32 Arithmetic shift right immediate to C
-- [ ] ROTL32 Rotate left
-- [ ] ROTLI32 Rotate left immediate
+- [x] ROTL32 Rotate left
+- [x] ROTLI32 Rotate left immediate
 - [ ] XSR32 Extended shift right
 ##### compare
 - [x] CMPNE32 Compare unequal
@@ -239,7 +239,7 @@
 - [x] LSRI16 Logical shift right immediate
 - [x] ASR16 Arithmetic shift right
 - [x] ASRI16 Arithmetic shift right immediate
-- [ ] ROTL16 Rotate left
+- [x] ROTL16 Rotate left
 ##### compare
 - [x] CMPNE16 Compare unequal
 - [x] CMPNEI16 Compare unequal immediate
