@@ -2,11 +2,11 @@
 # b* jsr/rts
 with : i32_op = 0b1010 {
     # bt
-    :bt i32_imm16_immSP_O1 is i32_imm16_sop = 0b00000 & i32_imm16_rx = 0b00011 & i32_imm16_immSP_O1 {
+    :bt i32_imm16_immSP_O1 is i32_imm16_sop = 0b00011 & i32_imm16_rx = 0b00000 & i32_imm16_immSP_O1 {
         if ($(cf)==1) goto i32_imm16_immSP_O1;
     }
     # bf
-    :bf i32_imm16_immSP_O1 is i32_imm16_sop = 0b00000 & i32_imm16_rx = 0b00010 & i32_imm16_immSP_O1 {
+    :bf i32_imm16_immSP_O1 is i32_imm16_sop = 0b00010 & i32_imm16_rx = 0b00000 & i32_imm16_immSP_O1 {
         if ($(cf)==0) goto i32_imm16_immSP_O1;
     }
     # br 32 bit
