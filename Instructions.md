@@ -115,7 +115,7 @@
 - [ ] ABS32 Absolute value
 - [ ] FF0. 32 Fast find 0
 - [ ] FF1. 32 Fast find 1
-- [ ] BMASKI32 Bit mask generation immediate
+- [x] BMASKI32 Bit mask generation immediate
 - [ ] BGENR32 Register bit generation
 - [ ] BGENI32 Bit generation immediate
 #### Branch Jump

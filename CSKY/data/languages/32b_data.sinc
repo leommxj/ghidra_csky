@@ -247,3 +247,10 @@ with : i32_op = 0b0001 {
         }
     }
 }
+
+# miscellaneous operation Part
+# bmaski Attention: When OIMM5 is 1-16, movi instruction will be executed.
+:bmaski i32_r_rz, oimm is i32_op = 0b0001 & i32_r_rx = 0b00000 & i32_r_sop = 0b010100 & i32_r_pcode = 0b00001 & i32_r_rz & i32_r_imm5 [oimm = i32_r_imm5+1;] {
+    local tmp:4 = (1 << oimm) - 1;
+    i32_r_rz = tmp;
+}
