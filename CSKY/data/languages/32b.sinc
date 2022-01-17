@@ -49,6 +49,9 @@ define token ins32(32)
     i32_bit_2125 = (5,9)
     i32_bit_1015 = (26,31)
     i32_bit_0509 = (21,25)
+
+    i32_bit_1215 = (28,31)
+    i32_bit_1011 = (26,27)
 ;
 
 
@@ -79,5 +82,5 @@ with : i32_optype = 0b11 {
 @include "32b_memory.sinc"
 #@include "32b_coproc.sinc"
 #@include "32b_priv.sinc"
-#@include "32b_special.sinc"
+@include "32b_special.sinc"
 }

@@ -207,7 +207,7 @@
 - [ ] BKPT32 Breakpoint instruction
 - [ ] SCE32 Set conditional execution
 - [ ] IDLY32 Ban interrupt identification
-- [ ] TRAP32 Unconditional operating system trap
+- [x] TRAP32 Unconditional operating system trap
 - [ ] PLDR32 Prefetch read data
 - [ ] PLDW32 Prefetch write data
 - [ ] WE32 Wait event
