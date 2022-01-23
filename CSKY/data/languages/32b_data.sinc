@@ -15,7 +15,7 @@
     i32_imm18_rz = r28 + i32_imm18_imm_A1;
 }
 
-:subu32 i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
+:subu i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
     i32_r_rz = i32_r_rx - i32_r_ry;
 }
 :subc i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b01000 & i32_r_rz & i32_r_rx & i32_r_ry {
@@ -68,6 +68,9 @@ with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
 # movi second format single register imm16 (16,20) is rz
 :movi i32_imm16_rx, i32_imm16_imm is i32_op = 0b1010 & i32_imm16_sop = 0b10000 & i32_imm16_rx & i32_imm16_imm {
     i32_imm16_rx = i32_imm16_imm;
+}
+:movih i32_imm16_rx, i32_imm16_imm is i32_op = 0b1010 & i32_imm16_sop = 0b10001 & i32_imm16_rx & i32_imm16_imm {
+    i32_imm16_rx = i32_imm16_imm<<16;
 }
 :mvc i32_r_rz is i32_op = 0b0001 & i32_bit_2125 = 0b00000 & i32_bit_1620 = 0b00000 & i32_bit_1015 = 0b000001 & i32_bit_0509 = 0b01000 & i32_r_rz {
     i32_r_rz = zext($(cf));
@@ -132,19 +135,38 @@ with : i32_op = 0b1001 {
 
 # shift Part
 with : i32_op = 0b0001 {
-    :lsl i32_r_rz, i32_r_rx, i32_r_ry is i32_r_sop = 0b010000 & i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_r_rz {
-        i32_r_rz = (i32_r_rx << (i32_r_ry[0,6]));
+    with : i32_r_sop = 0b010000 {
+        :lsl i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_r_rz {
+            local tmp:4 = i32_r_ry & 0x3f;
+            i32_r_rz = i32_r_rx << tmp;
+        }
+        :lsr i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00010 & i32_r_ry & i32_r_rx & i32_r_rz {
+            local tmp:4 = i32_r_ry & 0x3f;
+            i32_r_rz = i32_r_rx >> tmp;
+        }
+        :asr i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
+            local tmp:4 = i32_r_ry & 0x3f;
+            i32_r_rz = i32_r_rx s>> tmp;
+        }
+        :rotl i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b01000 & i32_r_rz & i32_r_rx & i32_r_ry {
+            local tmp:4 = i32_r_ry & 0x3f;
+            i32_r_rz = (i32_r_rx << tmp) | (i32_r_rx>>(32-tmp));
+        }
     }
-    # lsli i32_r_imm5 should in [1-31]
-    :lsli i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_sop = 0b010010 & i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 {
-        i32_r_rz = (i32_r_rx << (i32_r_imm5));
-    }
-    :asr i32_r_rz, i32_r_rx, i32_r_ry is i32_r_sop = 0b010000 & i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
-        local tmp:4 = i32_r_ry & 0x3f;
-        i32_r_rz = i32_r_rx s>> tmp;
-    }
-    :asri i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_sop = 0b010010 & i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_imm5 {
-        i32_r_rz = i32_r_rx s>> i32_r_imm5;
+    # lsli/lsri/asri/rotli i32_r_imm5 should in [1-31]
+    with : i32_r_sop = 0b010010 {
+        :lsli i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 {
+            i32_r_rz = (i32_r_rx << (i32_r_imm5));
+        }
+        :lsri i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_imm5 {
+            i32_r_rz = (i32_r_rx >> (i32_r_imm5));
+        }
+        :asri i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_imm5 {
+            i32_r_rz = i32_r_rx s>> i32_r_imm5;
+        }
+        :rotli i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b01000 & i32_r_rz & i32_r_rx & i32_r_imm5 {
+            i32_r_rz = ((i32_r_rx << (i32_r_imm5))|(i32_r_rx >> (32-i32_r_imm5)));
+        }
     }
 }
 
@@ -224,4 +246,11 @@ with : i32_op = 0b0001 {
             i32_r_rz = i32_r_rx / i32_r_ry;
         }
     }
+}
+
+# miscellaneous operation Part
+# bmaski Attention: When OIMM5 is 1-16, movi instruction will be executed.
+:bmaski i32_r_rz, oimm is i32_op = 0b0001 & i32_r_rx = 0b00000 & i32_r_sop = 0b010100 & i32_r_pcode = 0b00001 & i32_r_rz & i32_r_imm5 [oimm = i32_r_imm5+1;] {
+    local tmp:4 = (1 << oimm) - 1;
+    i32_r_rz = tmp;
 }

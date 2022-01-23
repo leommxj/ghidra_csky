@@ -33,14 +33,14 @@
 - [x] LSL32 Logical shift left
 - [x] LSLI32 Logical shift left immediate
 - [ ] LSLC32 Logical shift left immediate to C
-- [ ] LSR32 Logical shift right
-- [ ] LSRI32 Logical shift right immediate
+- [x] LSR32 Logical shift right
+- [x] LSRI32 Logical shift right immediate
 - [ ] LSRC32 Logical shift right immediate to C
 - [x] ASR32 Arithmetic shift right
 - [x] ASRI32 Arithmetic shift right immediate
 - [ ] ASRC32 Arithmetic shift right immediate to C
-- [ ] ROTL32 Rotate left
-- [ ] ROTLI32 Rotate left immediate
+- [x] ROTL32 Rotate left
+- [x] ROTLI32 Rotate left immediate
 - [ ] XSR32 Extended shift right
 ##### compare
 - [x] CMPNE32 Compare unequal
@@ -56,7 +56,7 @@
 - [x] MOVF32 C=0 Move
 - [x] MOVT32 C=1 Move
 - [x] MOVI32 Move immediate
-- [ ] MOVIH32 Move immediate high
+- [x] MOVIH32 Move immediate high
 - [ ] MTHI32 Write transfer to high bit of accumulator
 - [ ] MTLO32 Write transfer to low bit of accumulator
 - [ ] MFHI32 Read transfer from high bit of accumulator
@@ -115,7 +115,7 @@
 - [ ] ABS32 Absolute value
 - [ ] FF0. 32 Fast find 0
 - [ ] FF1. 32 Fast find 1
-- [ ] BMASKI32 Bit mask generation immediate
+- [x] BMASKI32 Bit mask generation immediate
 - [ ] BGENR32 Register bit generation
 - [ ] BGENI32 Bit generation immediate
 #### Branch Jump
@@ -131,9 +131,9 @@
 ##### jump
 - [x] BR32 Unconditional jump
 - [x] BSR32 Jump to subprogram
-- [ ] JMPI32 Jump indirect
-- [ ] JSRI32 Jump to subprogram indirect
-- [ ] JMP32 Register jump
+- [x] JMPI32 Jump indirect
+- [x] JSRI32 Jump to subprogram indirect
+- [x] JMP32 Register jump
 - [x] JSR32 Register jump to subprogram
 - [x] RTS32 Link register jump
 - [ ] JMPIX32 Register index jump
@@ -181,10 +181,10 @@
 - [ ] CPRCR32 Read transfer from control register of co-processor
 - [ ] CPWCR32 Write transfer to control register of co-processor
 - [ ] CPRC32 Read transfer from condition bit of co-processor
-##### ~ memory access
+##### co-processor memory access
 - [ ] LDCPR32 Load word to co-processor
 - [ ] STCPR32 Store word in co-processor
-##### ~ operation
+##### co-processor operation
 - [ ] CPOP32 Co-processor operation instruction
 #### Privileged instruction
 ##### control register operation
@@ -207,7 +207,7 @@
 - [ ] BKPT32 Breakpoint instruction
 - [ ] SCE32 Set conditional execution
 - [ ] IDLY32 Ban interrupt identification
-- [ ] TRAP32 Unconditional operating system trap
+- [x] TRAP32 Unconditional operating system trap
 - [ ] PLDR32 Prefetch read data
 - [ ] PLDW32 Prefetch write data
 - [ ] WE32 Wait event
@@ -239,7 +239,7 @@
 - [x] LSRI16 Logical shift right immediate
 - [x] ASR16 Arithmetic shift right
 - [x] ASRI16 Arithmetic shift right immediate
-- [ ] ROTL16 Rotate left
+- [x] ROTL16 Rotate left
 ##### compare
 - [x] CMPNE16 Compare unequal
 - [x] CMPNEI16 Compare unequal immediate
@@ -274,7 +274,7 @@
 - [x] BF16 C=0 branch instruction
 ##### jump
 - [x] BR16 Unconditional jump
-- [ ] JMP16 Register jump
+- [x] JMP16 Register jump
 - [x] JSR16 Register jump to subprogram
 - [x] RTS16 Link register jump
 - [ ] JMPIX16 Register index jump

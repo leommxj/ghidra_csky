@@ -104,31 +104,32 @@ with : i16_optype = 0b01 & i16_4op = 0b1011 {
 
 
 # shift Part
-# lsl six low bits of rx / rx[5:0] as shift value
-:lsl i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b00 & i16_r4_rz & i16_r4_rx {
-    i16_r4_rz = (i16_r4_rz<<(i16_r4_rx[0,6]));
+# lsl/lsr/asr/rotl six low bits of rx / rx[5:0] as shift value
+with : i16_optype = 0b01 & i16_4op = 0b1100 {
+    :lsl i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b00 & i16_r4_rz & i16_r4_rx {
+        i16_r4_rz = (i16_r4_rz<<(i16_r4_rx[0,6]));
+    }
+    :lsr i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b01 & i16_r4_rz & i16_r4_rx {
+        local tmp:4 = i16_r4_rx & 0x3f;
+        i16_r4_rz = i16_r4_rz >> tmp;
+    }
+    :asr i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b10 & i16_r4_rz & i16_r4_rx {
+        local tmp:4 = i16_r4_rx & 0x3f;
+        i16_r4_rz = i16_r4_rz s>> tmp;
+    }
+    :rotl i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b11 & i16_r4_rz & i16_r4_rx {
+        local tmp:4 = i16_r4_rx & 0x3f;
+        i16_r4_rz = (i16_r4_rz << tmp)|(i16_r4_rz>>(32-tmp));
+    }
 }
-# lsli
 :lsli i16_imm5_rz, i16_imm5_rx , i16_imm5_imm is i16_optype = 0b01 & i16_3op = 0b000 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
     i16_imm5_rz = (i16_imm5_rx << (i16_imm5_imm));
 }
-# lsr
-:lsr i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b01 & i16_r4_rz & i16_r4_rx {
-    local tmp:4 = i16_r4_rx & 0x3f;
-    i16_r4_rz = i16_r4_rz >> tmp;
-}
-# lsri
 :lsri i16_imm5_rz, i16_imm5_rx, i16_imm5_imm is i16_optype = 0b01 & i16_3op = 0b001 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
     if(i16_imm5_imm:4==0) goto <end>;
     i16_imm5_rz = i16_imm5_rx >> i16_imm5_imm;
     <end>
 }
-# asr six low bits of rx
-:asr i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b10 & i16_r4_rz & i16_r4_rx {
-    local tmp:4 = i16_r4_rx & 0x3f;
-    i16_r4_rz = i16_r4_rz s>> tmp;
-}
-# asri
 :asri i16_imm5_rz, i16_imm5_rx, i16_imm5_imm is i16_optype = 0b01 & i16_3op = 0b010 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
     if(i16_imm5_imm:4==0) goto <end>;
     i16_imm5_rz = i16_imm5_rx s>> i16_imm5_imm;

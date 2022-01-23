@@ -2,11 +2,11 @@
 # b* jsr/rts
 with : i32_op = 0b1010 {
     # bt
-    :bt i32_imm16_immSP_O1 is i32_imm16_sop = 0b00000 & i32_imm16_rx = 0b00011 & i32_imm16_immSP_O1 {
+    :bt i32_imm16_immSP_O1 is i32_imm16_sop = 0b00011 & i32_imm16_rx = 0b00000 & i32_imm16_immSP_O1 {
         if ($(cf)==1) goto i32_imm16_immSP_O1;
     }
     # bf
-    :bf i32_imm16_immSP_O1 is i32_imm16_sop = 0b00000 & i32_imm16_rx = 0b00010 & i32_imm16_immSP_O1 {
+    :bf i32_imm16_immSP_O1 is i32_imm16_sop = 0b00010 & i32_imm16_rx = 0b00000 & i32_imm16_immSP_O1 {
         if ($(cf)==0) goto i32_imm16_immSP_O1;
     }
     # br 32 bit
@@ -45,10 +45,23 @@ with : i32_op = 0b1010 {
         local dest:4 = i32_imm16_rx & 0xfffffffe;
         call [dest];
     }
-    # rts 
+    # rts is pseudo instruction of jmp32 r15
     :rts is i32_imm16_sop = 0b00110 & i32_imm16_rx = 0b01111 & i32_imm16_imm = 0b0000000000000000 {
         local dest:4 = r15 & 0xfffffffe;
         return [dest];
+    }
+    :jmp i32_imm16_rx is i32_imm16_sop = 0b00110 & i32_imm16_imm = 0b0000000000000000 & i32_imm16_rx {
+        local dest:4 = i32_imm16_rx & 0xfffffffe;
+        goto [dest];
+    }
+    :jmpi i32_imm16_immSP_O2 is i32_imm16_sop = 0b10110 & i32_bit_1620 = 0b00000 & i32_imm16_immSP_O2 {
+        local dest:4 = i32_imm16_immSP_O2 & 0xfffffffe;
+        goto [dest];
+    }
+    :jsri i32_imm16_immSP_O2 is i32_imm16_sop = 0b10111 & i32_bit_1620 = 0b00000 & i32_imm16_immSP_O2 {
+        r15 = inst_next;
+        local dest:4 = i32_imm16_immSP_O2 & 0xfffffffe;
+        goto [dest];
     }
 }
 
