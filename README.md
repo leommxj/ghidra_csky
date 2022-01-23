@@ -4,7 +4,7 @@
 * Download the built extension from GitHub
   * Visit the [Releases](../../releases) page, normally use the latest release
   * Download the built extension zip file, the name will be similar to:
-    `ghidra_10.1_PUBLIC_YYYYMMDD_nsis.zip`
+    `ghidra_10.1_PUBLIC_YYYYMMDD_CSKY.zip`
 * Install the extension into Ghidra
   * Start Ghidra
   * Open `File->Install Extensions...`
