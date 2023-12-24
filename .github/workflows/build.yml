@@ -1,9 +1,9 @@
 name: Ghidra CSKY Extension Build
 
 env:
-  ghidra-url: https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.1.5_build/ghidra_10.1.5_PUBLIC_20220726.zip
-  ghidra-zip-filename: ghidra_10.1.5_PUBLIC_20220726.zip
-  ghidra-directory: ghidra_10.1.5_PUBLIC
+  ghidra-url: https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_11.0_build/ghidra_11.0_PUBLIC_20231222.zip
+  ghidra-zip-filename: ghidra_11.0_PUBLIC_20231222.zip
+  ghidra-directory: ghidra_11.0_PUBLIC
 
 on:
   release:
@@ -29,12 +29,12 @@ jobs:
         args: unzip -qq ${{ steps.download-ghidra.outputs.file-path }} -d .
     - uses: actions/setup-java@v1
       with:
-        java-version: '11.0.2'
+        java-version: '17'
 
     - name: Build extension
       uses: eskatos/gradle-command-action@v1
       with:
-        gradle-version: '7.3'
+        gradle-version: '8.5'
         build-root-directory: ${{ github.workspace }}/CSKY
         arguments: '-PGHIDRA_INSTALL_DIR=${{ github.workspace }}/${{ env.ghidra-directory }}'
 
