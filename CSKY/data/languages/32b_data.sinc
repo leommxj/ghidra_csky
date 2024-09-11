@@ -26,6 +26,19 @@
     i32_imm12_rz = i32_imm12_rx - oimm;
 }
 
+# index
+with : i32_op = 0b0001 & i32_r_sop = 0b000010 {
+    :ixh i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_ry {
+        i32_r_rz = i32_r_rx + i32_r_ry<<1;
+    }
+    :ixw i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_ry {
+        i32_r_rz = i32_r_rx + i32_r_ry<<2;
+    }
+    :ixd i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
+        i32_r_rz = i32_r_rx + i32_r_ry<<3;
+    }
+}
+
 # incf/inct/decf/dect two registers second format rz is ry(21,25)
 with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
     :incf i32_r_ry, i32_r_rx, i32_bit_0004 is i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_bit_0004 {
