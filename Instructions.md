@@ -32,13 +32,13 @@
 ##### shift
 - [x] LSL32 Logical shift left
 - [x] LSLI32 Logical shift left immediate
-- [ ] LSLC32 Logical shift left immediate to C
+- [x] LSLC32 Logical shift left immediate to C
 - [x] LSR32 Logical shift right
 - [x] LSRI32 Logical shift right immediate
-- [ ] LSRC32 Logical shift right immediate to C
+- [x] LSRC32 Logical shift right immediate to C
 - [x] ASR32 Arithmetic shift right
 - [x] ASRI32 Arithmetic shift right immediate
-- [ ] ASRC32 Arithmetic shift right immediate to C
+- [x] ASRC32 Arithmetic shift right immediate to C
 - [x] ROTL32 Rotate left
 - [x] ROTLI32 Rotate left immediate
 - [ ] XSR32 Extended shift right

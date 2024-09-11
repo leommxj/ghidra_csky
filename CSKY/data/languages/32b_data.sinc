@@ -168,6 +168,17 @@ with : i32_op = 0b0001 {
             i32_r_rz = ((i32_r_rx << (i32_r_imm5))|(i32_r_rx >> (32-i32_r_imm5)));
         }
     }
+    with : i32_r_sop = 0b010011 {
+        :lslc i32_r_rz, i32_r_rx, oimm5 is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 [oimm5 = i32_r_imm5+1;] {
+            i32_r_rz = (i32_r_rx << (oimm5));
+        }
+        :lsrc i32_r_rz, i32_r_rx, oimm5 is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_imm5 [oimm5 = i32_r_imm5+1;] {
+            i32_r_rz = (i32_r_rx >> (oimm5));
+        }
+        :asrc i32_r_rz, i32_r_rx, oimm5 is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_imm5 [oimm5 = i32_r_imm5+1;] {
+            i32_r_rz = i32_r_rx s>> oimm5;
+        }
+    }
 }
 
 # bit operation Part
