@@ -184,12 +184,18 @@ with : i32_op = 0b0001 {
     with : i32_r_sop = 0b010011 {
         :lslc i32_r_rz, i32_r_rx, oimm5 is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 [oimm5 = i32_r_imm5+1;] {
             i32_r_rz = (i32_r_rx << (oimm5));
+            local tmp = i32_r_rx & (1<<(32-oimm5));
+            set_cf(tmp!=0);
         }
         :lsrc i32_r_rz, i32_r_rx, oimm5 is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_imm5 [oimm5 = i32_r_imm5+1;] {
             i32_r_rz = (i32_r_rx >> (oimm5));
+            local tmp = i32_r_rx & (1<<(oimm5-1));
+            set_cf(tmp!=0);
         }
         :asrc i32_r_rz, i32_r_rx, oimm5 is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_imm5 [oimm5 = i32_r_imm5+1;] {
             i32_r_rz = i32_r_rx s>> oimm5;
+            local tmp = i32_r_rx & (1<<(oimm5-1));
+            set_cf(tmp!=0);
         }
     }
 }
