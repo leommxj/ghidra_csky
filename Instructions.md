@@ -59,8 +59,8 @@
 - [x] MOVIH32 Move immediate high
 - [ ] MTHI32 Write transfer to high bit of accumulator
 - [ ] MTLO32 Write transfer to low bit of accumulator
-- [ ] MFHI32 Read transfer from high bit of accumulator
-- [ ] MFLO32 Read transfer from low bit of accumulator
+- [x] MFHI32 Read transfer from high bit of accumulator
+- [x] MFLO32 Read transfer from low bit of accumulator
 - [ ] MFHIS32 Read transfer saturate from high bit of accumulator
 - [ ] MFLOS32 Read transfer saturate from low bit of accumulator
 - [x] MVCV32 C bit reverse move
@@ -90,9 +90,9 @@
 - [ ] REVB32 Byte-reverse
 - [ ] REVH32 Half-word byte-reverse 
 ##### Mutliply-divide
-- [ ] MULU32 Multiply unsigned
-- [ ] MULUA32 Multiply-accumulate unsigned
-- [ ] MULUS32 Multiply-subtract unsigned
+- [x] MULU32 Multiply unsigned
+- [x] MULUA32 Multiply-accumulate unsigned
+- [x] MULUS32 Multiply-subtract unsigned
 - [ ] MULS32 Multiply signed
 - [ ] MULSA32 Multiply-accumulate signed
 - [ ] MULSS32 Multiply-subtract signed
