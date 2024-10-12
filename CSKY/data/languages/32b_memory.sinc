@@ -87,13 +87,13 @@ with : i32_op = 0b0101 {
 #push
 push32list1: is i32_bit_0003 = 0x0 {}
 push32list1: {r4} is i32_bit_0003 = 0x1 & r4 {push(r4);}
-push32list1: {r4,r5} is i32_bit_0003 = 0x2 & r4 & r5 {push(r4); push(r5);}
-push32list1: {r4,r5,r6} is i32_bit_0003 = 0x3 & r4 & r5 & r6 {push(r4); push(r5); push(r6);}
-push32list1: {r4,r5,r6,r7} is i32_bit_0003 = 0x4 & r4 & r5 & r6 & r7 {push(r4); push(r5); push(r6); push(r7);}
-push32list1: {r4,r5,r6,r7,r8} is i32_bit_0003 = 0x5 & r4 & r5 & r6 & r7 & r8 {push(r4); push(r5); push(r6); push(r7); push(r8);}
-push32list1: {r4,r5,r6,r7,r8,r9} is i32_bit_0003 = 0x6 & r4 & r5 & r6 & r7 & r8 & r9 {push(r4); push(r5); push(r6); push(r7); push(r8); push(r9);}
-push32list1: {r4,r5,r6,r7,r8,r9,r10} is i32_bit_0003 = 0x7 & r4 & r5 & r6 & r7 & r8 & r9 & r10 {push(r4); push(r5); push(r6); push(r7); push(r8); push(r9); push (r10);}
-push32list1: {r4,r5,r6,r7,r8,r9,r10,r11} is i32_bit_0003 = 0x8 & r4 & r5 & r6 & r7 & r8 & r9 & r10 & r11 {push(r4); push(r5); push(r6); push(r7); push(r8); push(r9); push (r10); push(r11);}
+push32list1: {r4,r5} is i32_bit_0003 = 0x2 & r4 & r5 {push(r5); push(r4);}
+push32list1: {r4,r5,r6} is i32_bit_0003 = 0x3 & r4 & r5 & r6 {push(r6); push(r5); push(r4);}
+push32list1: {r4,r5,r6,r7} is i32_bit_0003 = 0x4 & r4 & r5 & r6 & r7 {push(r7); push(r6); push(r5); push(r4);}
+push32list1: {r4,r5,r6,r7,r8} is i32_bit_0003 = 0x5 & r4 & r5 & r6 & r7 & r8 {push(r8); push(r7); push(r6); push(r5); push(r4);}
+push32list1: {r4,r5,r6,r7,r8,r9} is i32_bit_0003 = 0x6 & r4 & r5 & r6 & r7 & r8 & r9 {push(r9); push(r8); push(r7); push(r6); push(r5); push(r4);}
+push32list1: {r4,r5,r6,r7,r8,r9,r10} is i32_bit_0003 = 0x7 & r4 & r5 & r6 & r7 & r8 & r9 & r10 {push(r10); push(r9); push(r8); push(r7); push(r6); push(r5); push (r4);}
+push32list1: {r4,r5,r6,r7,r8,r9,r10,r11} is i32_bit_0003 = 0x8 & r4 & r5 & r6 & r7 & r8 & r9 & r10 & r11 {push(r11); push(r10); push(r9); push(r8); push(r7); push(r6); push (r5); push(r4);}
 
 push32lr: is i32_bit_0404 = 0b0 {}
 push32lr:r15 is i32_bit_0404 = 0b1 & r15 {push(r15);}
@@ -101,17 +101,17 @@ push32lr:, r15 is i32_bit_0404 = 0b1 & i32_bit_0003 != 0x0 & r15 {push(r15);}
 
 push32list2: is i32_bit_0507 = 0x0 {}
 push32list2: {r16} is i32_bit_0507 = 0x1 & r16 {push(r16);}
-push32list2: {r16,r17} is i32_bit_0507 = 0x2 & r16 & r17 {push(r16); push(r17);}
+push32list2: {r16,r17} is i32_bit_0507 = 0x2 & r16 & r17 {push(r17); push(r16);}
 
 push32r28: is i32_bit_0808 = 0b0 {}
 push32r28:r28 is i32_bit_0808 = 0b1 & r28 {push(r28);}
-push32r28:, r28 is i32_bit_0808 = 0b1 & (i32_bit_0003 != 0x0 | i32_bit_0404 != 0x0 | i32_bit_0507 != 0) & r28 {push(r28);}
+push32r28:,r28 is i32_bit_0808 = 0b1 & (i32_bit_0003 != 0x0 | i32_bit_0404 != 0x0 | i32_bit_0507 != 0) & r28 {push(r28);}
 
 :push push32list1 push32lr push32list2 push32r28 is i32_op = 0b1010 & i32_bit_2125 = 0b11111 & i32_bit_1620 = 0x0 & i32_bit_0915 = 0x0 & push32list1 & push32lr & push32list2 & push32r28 {
-    build push32list1;
-    build push32lr;
-    build push32list2;
     build push32r28;
+    build push32list2;
+    build push32lr;
+    build push32list1;
 }
 
 #pop
@@ -138,10 +138,10 @@ pop32r28:r28 is i32_bit_0808 = 0b1 & r28 {pop(r28);}
 pop32r28:, r28 is i32_bit_0808 = 0b1 & (i32_bit_0003 != 0x0 | i32_bit_0404 != 0x0 | i32_bit_0507 != 0) & r28 {pop(r28);}
 
 :pop pop32list1 pop32lr pop32list2 pop32r28 is i32_op = 0b1010 & i32_bit_2125 = 0b11110 & i32_bit_1620 = 0x0 & i32_bit_0915 = 0x0 & pop32list1 & pop32lr & pop32list2 & pop32r28 {
-    local tmp:4 = r15 & 0xfffffffe;
     build pop32list1;
     build pop32lr;
     build pop32list2;
     build pop32r28;
+    local tmp:4 = r15 & 0xfffffffe;
     return [tmp];
 }
