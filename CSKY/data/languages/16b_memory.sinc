@@ -36,22 +36,22 @@
 
 push16list: is i16_bit_0003 = 0x0 {}
 push16list: {r4} is i16_bit_0003 = 0x1 & r4 {push(r4);}
-push16list: {r4,r5} is i16_bit_0003 = 0x2 & r4 & r5 {push(r4); push(r5);}
-push16list: {r4,r5,r6} is i16_bit_0003 = 0x3 & r4 & r5 & r6 {push(r4); push(r5); push(r6);}
-push16list: {r4,r5,r6,r7} is i16_bit_0003 = 0x4 & r4 & r5 & r6 & r7 {push(r4); push(r5); push(r6); push(r7);}
-push16list: {r4,r5,r6,r7,r8} is i16_bit_0003 = 0x5 & r4 & r5 & r6 & r7 & r8 {push(r4); push(r5); push(r6); push(r7); push(r8);}
-push16list: {r4,r5,r6,r7,r8,r9} is i16_bit_0003 = 0x6 & r4 & r5 & r6 & r7 & r8 & r9 {push(r4); push(r5); push(r6); push(r7); push(r8); push(r9);}
-push16list: {r4,r5,r6,r7,r8,r9,r10} is i16_bit_0003 = 0x7 & r4 & r5 & r6 & r7 & r8 & r9 & r10 {push(r4); push(r5); push(r6); push(r7); push(r8); push(r9); push (r10);}
-push16list: {r4,r5,r6,r7,r8,r9,r10,r11} is i16_bit_0003 = 0x8 & r4 & r5 & r6 & r7 & r8 & r9 & r10 & r11 {push(r4); push(r5); push(r6); push(r7); push(r8); push(r9); push (r10); push(r11);}
+push16list: {r4,r5} is i16_bit_0003 = 0x2 & r4 & r5 {push(r5); push(r4);}
+push16list: {r4,r5,r6} is i16_bit_0003 = 0x3 & r4 & r5 & r6 {push(r6); push(r5); push(r4);}
+push16list: {r4,r5,r6,r7} is i16_bit_0003 = 0x4 & r4 & r5 & r6 & r7 {push(r7); push(r6); push(r5); push(r4);}
+push16list: {r4,r5,r6,r7,r8} is i16_bit_0003 = 0x5 & r4 & r5 & r6 & r7 & r8 {push(r8); push(r7); push(r6); push(r5); push(r4);}
+push16list: {r4,r5,r6,r7,r8,r9} is i16_bit_0003 = 0x6 & r4 & r5 & r6 & r7 & r8 & r9 {push(r9); push(r8); push(r7); push(r6); push(r5); push(r4);}
+push16list: {r4,r5,r6,r7,r8,r9,r10} is i16_bit_0003 = 0x7 & r4 & r5 & r6 & r7 & r8 & r9 & r10 {push(r10); push(r9); push(r8); push(r7); push(r6); push(r5); push (r4);}
+push16list: {r4,r5,r6,r7,r8,r9,r10,r11} is i16_bit_0003 = 0x8 & r4 & r5 & r6 & r7 & r8 & r9 & r10 & r11 {push(r11); push(r10); push(r9); push(r8); push(r7); push(r6); push (r5); push(r4);}
 
 push16lr: is i16_bit_0404 = 0b0 {}
 push16lr:r15 is i16_bit_0404 = 0b1 & r15 {push(r15);}
-push16lr:, r15 is i16_bit_0404 = 0b1 & i16_bit_0003 != 0x0 & r15 {push(r15);}
+push16lr:,r15 is i16_bit_0404 = 0b1 & i16_bit_0003 != 0x0 & r15 {push(r15);}
 
 # push
-:push push16list push16lr is i16_optype = 0b00 & i16_4op = 0b0101 & i16_bit_0509 = 0b00110 & push16list & push16lr {
-    build push16list;
+:push push16list^push16lr is i16_optype = 0b00 & i16_4op = 0b0101 & i16_bit_0509 = 0b00110 & push16list & push16lr {
     build push16lr;
+    build push16list;
 }
 
 pop16list: is i16_bit_0003 = 0x0 {}
@@ -66,12 +66,12 @@ pop16list: {r4,r5,r6,r7,r8,r9,r10,r11} is i16_bit_0003 = 0x8 & r4 & r5 & r6 & r7
 
 pop16lr: is i16_bit_0404 = 0b0 {}
 pop16lr:r15 is i16_bit_0404 = 0b1 & r15 {pop(r15);}
-pop16lr:, r15 is i16_bit_0404 = 0b1 & i16_bit_0003 != 0x0 & r15 {pop(r15);}
+pop16lr:,r15 is i16_bit_0404 = 0b1 & i16_bit_0003 != 0x0 & r15 {pop(r15);}
 
 # pop
-:pop pop16list pop16lr is i16_optype = 0b00 & i16_4op = 0b0101 & i16_bit_0509 = 0b00100 & pop16list & pop16lr {
-    local tmp:4 = r15 & 0xfffffffe;
+:pop pop16list^pop16lr is i16_optype = 0b00 & i16_4op = 0b0101 & i16_bit_0509 = 0b00100 & pop16list & pop16lr {
     build pop16list;
     build pop16lr;
+    local tmp:4 = r15 & 0xfffffffe;
     return [tmp];
 }
