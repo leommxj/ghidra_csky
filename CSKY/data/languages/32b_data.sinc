@@ -29,8 +29,9 @@
     i32_r_rz = i32_r_rx - i32_r_ry;
 }
 :subc i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b01000 & i32_r_rz & i32_r_rx & i32_r_ry {
-    set_cf(!sborrow(i32_r_rx, i32_r_ry));
-    i32_r_rz = i32_r_rx - i32_r_ry;
+	local tmp:4 = psr_cf;
+	psr_cf = (i32_r_rx >= i32_r_ry) && ( tmp != 0b0 || i32_r_rx != i32_r_ry );
+	i32_r_rz = zext( i32_r_rx - i32_r_ry - (tmp ^ 1) );
 }
 :subi i32_imm12_rz, i32_imm12_rx, oimm is i32_op = 0b1001 & i32_imm12_sop = 0b0001 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [oimm = (i32_imm12_imm+1);] {
     i32_imm12_rz = i32_imm12_rx - oimm;
@@ -52,23 +53,23 @@ with : i32_op = 0b0001 & i32_r_sop = 0b000010 {
 # incf/inct/decf/dect two registers second format rz is ry(21,25)
 with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
     :incf i32_r_ry, i32_r_rx, i32_bit_0004 is i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_bit_0004 {
-        if($(cf)!=0) goto <end>;
-        i32_r_ry = i32_r_rx + i32_bit_0004;
+        if(psr_cf) goto <end>;
+        i32_r_ry = i32_r_rx + zext( i32_bit_0004:1 );
         <end>
     }
     :inct i32_r_ry, i32_r_rx, i32_bit_0004 is i32_r_pcode = 0b00010 & i32_r_ry & i32_r_rx & i32_bit_0004 {
-        if($(cf)!=1) goto <end>;
-        i32_r_ry = i32_r_rx + i32_bit_0004;
+        if(!psr_cf) goto <end>;
+        i32_r_ry = i32_r_rx + zext( i32_bit_0004:1 );
         <end>
     }
     :decf i32_r_ry, i32_r_rx, i32_bit_0004 is i32_r_pcode = 0b00100 & i32_r_ry & i32_r_rx & i32_bit_0004 {
-        if($(cf)!=0) goto <end>;
-        i32_r_ry = i32_r_rx - i32_bit_0004;
+        if(psr_cf) goto <end>;
+        i32_r_ry = i32_r_rx - zext( i32_bit_0004:1 );
         <end>
     }
     :dect i32_r_ry, i32_r_rx, i32_bit_0004 is i32_r_pcode = 0b01000 & i32_r_ry & i32_r_rx & i32_bit_0004 {
-        if($(cf)!=1) goto <end>;
-        i32_r_ry = i32_r_rx - i32_bit_0004;
+        if(!psr_cf) goto <end>;
+        i32_r_ry = i32_r_rx - zext( i32_bit_0004:1 );
         <end>
     }
 }
@@ -79,12 +80,12 @@ with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
 }
 # movf ry is rz; rz is 0
 :movf i32_r_ry, i32_r_rx is i32_op = 0b0001 & i32_r_sop = 0b000011 & i32_r_pcode = 0b00001 & i32_bit_0004 = 0b00000 & i32_r_ry & i32_r_rx{
-    if($(cf)!=0) goto <end>;
+    if(psr_cf) goto <end>;
     i32_r_ry = i32_r_rx;
     <end>
 }
-:movf i32_r_ry, i32_r_rx is i32_op = 0b0001 & i32_r_sop = 0b000011 & i32_r_pcode = 0b00010 & i32_bit_0004 = 0b00000 & i32_r_ry & i32_r_rx{
-    if($(cf)!=1) goto <end>;
+:movt i32_r_ry, i32_r_rx is i32_op = 0b0001 & i32_r_sop = 0b000011 & i32_r_pcode = 0b00010 & i32_bit_0004 = 0b00000 & i32_r_ry & i32_r_rx{
+    if(!psr_cf) goto <end>;
     i32_r_ry = i32_r_rx;
     <end>
 }
@@ -96,10 +97,10 @@ with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
     i32_imm16_rx = i32_imm16_imm<<16;
 }
 :mvc i32_r_rz is i32_op = 0b0001 & i32_bit_2125 = 0b00000 & i32_bit_1620 = 0b00000 & i32_bit_1015 = 0b000001 & i32_bit_0509 = 0b01000 & i32_r_rz {
-    i32_r_rz = zext($(cf));
+    i32_r_rz = zext(psr_cf);
 }
 :mvcv i32_r_rz is i32_op = 0b0001 & i32_bit_2125 = 0b00000 & i32_bit_1620 = 0b00000 & i32_bit_1015 = 0b000001 & i32_bit_0509 = 0b10000 & i32_r_rz {
-    i32_r_rz = zext(~$(cf));
+    i32_r_rz = zext(psr_cf ^ 1);
 }
 
 # lrw same as above
@@ -205,19 +206,19 @@ with : i32_op = 0b0001 {
     }
     with : i32_r_sop = 0b010011 {
         :lslc i32_r_rz, i32_r_rx, oimm5 is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 [oimm5 = i32_r_imm5+1;] {
-            i32_r_rz = (i32_r_rx << (oimm5));
+            i32_r_rz = i32_r_rx << oimm5;
             local tmp = i32_r_rx & (1<<(32-oimm5));
-            set_cf(tmp!=0);
+            psr_cf = (tmp!=0);
         }
         :lsrc i32_r_rz, i32_r_rx, oimm5 is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_imm5 [oimm5 = i32_r_imm5+1;] {
-            i32_r_rz = (i32_r_rx >> (oimm5));
+            i32_r_rz = i32_r_rx >> oimm5;
             local tmp = i32_r_rx & (1<<(oimm5-1));
-            set_cf(tmp!=0);
+            psr_cf = (tmp!=0);
         }
         :asrc i32_r_rz, i32_r_rx, oimm5 is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_imm5 [oimm5 = i32_r_imm5+1;] {
             i32_r_rz = i32_r_rx s>> oimm5;
             local tmp = i32_r_rx & (1<<(oimm5-1));
-            set_cf(tmp!=0);
+            psr_cf = (tmp!=0);
         }
     }
 }
@@ -237,8 +238,8 @@ with : i32_op = 0b0001 & i32_r_sop = 0b001010 {
         <end>
     }
     :btsti i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00100 & i32_bit_0004 = 0b00000 & i32_r_rx & i32_r_imm5 {
-        local tmp = i32_r_rx & (1<<i32_r_imm5);
-        set_cf(tmp!=0);
+        local tmp:4 = i32_r_rx & (1<<i32_r_imm5);
+        psr_cf = (tmp!=0);
     }
 }
 

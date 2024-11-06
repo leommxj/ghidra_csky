@@ -3,11 +3,11 @@ i16_j_offsetSP_O1: label is i16_j_sbit = 0b1 & i16_j_soffset [label = inst_start
 
 # bt
 :bt i16_j_offsetSP_O1 is i16_optype = 0b00 & i16_4op = 0b0010 & i16_j_offsetSP_O1 {
-    if($(cf)==1) goto i16_j_offsetSP_O1;
+    if(psr_cf) goto i16_j_offsetSP_O1;
 }
 # bf
 :bf i16_j_offsetSP_O1 is i16_optype = 0b00 & i16_4op = 0b0011 & i16_j_offsetSP_O1 {
-    if($(cf)==0) goto i16_j_offsetSP_O1;
+    if(!psr_cf) goto i16_j_offsetSP_O1;
 }
 
 :br i16_j_offsetSP_O1 is i16_optype = 0b00 & i16_4op = 0b0001 & i16_j_offsetSP_O1 {

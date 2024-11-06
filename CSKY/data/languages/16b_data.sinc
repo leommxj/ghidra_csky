@@ -9,8 +9,9 @@
     i16_r3_rz = i16_r3_rz + i16_r3_rx;
 }
 :addc i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1000 & i16_r4_sop = 0b01 & i16_r4_rz & i16_r4_rx {
-    set_cf(carry(i16_r4_rz, i16_r4_rx));
-    i16_r4_rz = i16_r4_rz + i16_r4_rx;
+	local tmp:4 = psr_cf;
+	psr_cf = carry(i16_r4_rz, i16_r4_rx) || ( i16_r4_rz + i16_r4_rx == 0xFFFFFFFF && tmp == 1 );
+	i16_r4_rz = i16_r4_rz + i16_r4_rx + tmp;
 }
 # addi 16 bit instruction ----1
 :addi i16_imm8_rz, oimm is i16_optype = 0b00 & i16_3op = 0b100 & i16_imm8_rz & i16_imm8_imm [oimm = (i16_imm8_imm+1);] {
@@ -37,8 +38,9 @@
     i16_r3_rz = i16_r3_rx - i16_r3_ry;
 }
 :subc i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1000 & i16_r4_sop = 0b11 & i16_r4_rz & i16_r4_rx {
-    set_cf(!sborrow(i16_r4_rz, i16_r4_rx));
-    i16_r4_rz = i16_r4_rz - i16_r4_rx;
+	local tmp:4 = psr_cf;
+	psr_cf = (i16_r4_rz >= i16_r4_rx) && ( tmp != 0b0 || i16_r4_rz != i16_r4_rx );
+	i16_r4_rz = i16_r4_rz - i16_r4_rx - (tmp ^ 1);
 }
 # subi instruction ----1
 :subi i16_imm8_rz, oimm is i16_optype = 0b00 & i16_3op = 0b101 & i16_imm8_rz & i16_imm8_imm [oimm = (i16_imm8_imm+1);] {
@@ -88,7 +90,7 @@ with : i16_optype = 0b01 & i16_4op = 0b1011 {
     i16_imm8_rz = i16_imm8_imm;
 }
 :mvcv i16_r4_rz is i16_optype = 0b01 & i16_4op = 0b1001 & i16_r4_rx_n = 0b0000 & i16_r4_sop = 0b11 & i16_r4_rz {
-    i16_r4_rz = zext(~$(cf));
+    i16_r4_rz = zext(~psr_cf );
 } 
 
 # lrw instruction ----1
@@ -142,30 +144,30 @@ with : i16_optype = 0b01 & i16_4op = 0b1100 {
 with : i16_optype = 0b01 & i16_4op = 0b1001 {
     # cmphs
     :cmphs i16_r4_rx, i16_r4_ry is i16_r4_sop = 0b00 & i16_r4_ry & i16_r4_rx {
-        set_cf(i16_r4_rx >= i16_r4_ry);
+        psr_cf = (i16_r4_rx >= i16_r4_ry);
     }
     # cmpne
     :cmpne i16_r4_rx, i16_r4_ry is i16_r4_sop = 0b10 & i16_r4_ry & i16_r4_rx {
-        set_cf(i16_r4_rx != i16_r4_ry);
+        psr_cf = (i16_r4_rx != i16_r4_ry);
     }
     # cmplt
     :cmplt i16_r4_rx, i16_r4_ry is i16_r4_sop = 0b01 & i16_r4_ry & i16_r4_rx {
-        set_cf(i16_r4_rx s< i16_r4_ry);
+        psr_cf = (i16_r4_rx s< i16_r4_ry);
     }
 }
 # cmp* with imm
 with : i16_optype = 0b00 & i16_3op = 0b111 {
     # cmphsi
     :cmphsi i16_imm5_rx, oimm5 is i16_imm5_sop = 0b000 & i16_imm5_rx & i16_imm5_imm [oimm5 = i16_imm5_imm+1;] {
-        set_cf(i16_imm5_rx>=zext(oimm5:4));
+        psr_cf = (i16_imm5_rx >= zext(oimm5:4));
     }
     # cmpnei
     :cmpnei i16_imm5_rx, i16_imm5_imm is i16_imm5_sop = 0b010 & i16_imm5_rx & i16_imm5_imm {
-        set_cf(i16_imm5_rx!=zext(i16_imm5_imm:4));
+        psr_cf = (i16_imm5_rx !=  ext(i16_imm5_imm:4));
     }
     # cmplti
     :cmplti i16_imm5_rx, oimm5 is i16_imm5_sop = 0b001 & i16_imm5_rx & i16_imm5_imm [oimm5 = i16_imm5_imm+1;] {
-        set_cf(i16_imm5_rx s< oimm5:4);
+        psr_cf = (i16_imm5_rx s< oimm5:4);
     }
 }
 
@@ -186,7 +188,7 @@ with : i16_optype = 0b00 & i16_3op = 0b111 {
     }
     :btsti i16_imm5_rx, i16_imm5_imm is i16_imm5_sop = 0b110 & i16_imm5_rx & i16_imm5_imm {
         local tmp = i16_imm5_rx & (1<<i16_imm5_imm);
-        set_cf(tmp!=0);
+        psr_cf = (tmp != 0);
     }
 }
 
