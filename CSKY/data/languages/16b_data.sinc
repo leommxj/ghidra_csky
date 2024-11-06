@@ -87,7 +87,7 @@ with : i16_optype = 0b01 & i16_4op = 0b1011 {
     i16_r4_rz = i16_r4_rx;
 }
 :movi i16_imm8_rz, i16_imm8_imm is i16_optype = 0b00 & i16_3op = 0b110 & i16_imm8_rz & i16_imm8_imm {
-    i16_imm8_rz = i16_imm8_imm;
+    i16_imm8_rz = zext(i16_imm8_imm:1);
 }
 :mvcv i16_r4_rz is i16_optype = 0b01 & i16_4op = 0b1001 & i16_r4_rx_n = 0b0000 & i16_r4_sop = 0b11 & i16_r4_rz {
     i16_r4_rz = zext(~psr_cf );
@@ -109,19 +109,20 @@ with : i16_optype = 0b01 & i16_4op = 0b1011 {
 # lsl/lsr/asr/rotl six low bits of rx / rx[5:0] as shift value
 with : i16_optype = 0b01 & i16_4op = 0b1100 {
     :lsl i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b00 & i16_r4_rz & i16_r4_rx {
-        i16_r4_rz = (i16_r4_rz<<(i16_r4_rx[0,6]));
+		local tmp:4 = i16_r4_rx & 0x3f;
+        i16_r4_rz = zext( i16_r4_rz << tmp );
     }
     :lsr i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b01 & i16_r4_rz & i16_r4_rx {
         local tmp:4 = i16_r4_rx & 0x3f;
-        i16_r4_rz = i16_r4_rz >> tmp;
+        i16_r4_rz = zext( i16_r4_rz >> tmp );
     }
     :asr i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b10 & i16_r4_rz & i16_r4_rx {
         local tmp:4 = i16_r4_rx & 0x3f;
-        i16_r4_rz = i16_r4_rz s>> tmp;
+        i16_r4_rz = zext(i16_r4_rz s>> tmp);
     }
     :rotl i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1100 & i16_r4_sop = 0b11 & i16_r4_rz & i16_r4_rx {
         local tmp:4 = i16_r4_rx & 0x3f;
-        i16_r4_rz = (i16_r4_rz << tmp)|(i16_r4_rz>>(32-tmp));
+        i16_r4_rz = zext((i16_r4_rz << tmp)|(i16_r4_rz>>(32-tmp)));
     }
 }
 :lsli i16_imm5_rz, i16_imm5_rx , i16_imm5_imm is i16_optype = 0b01 & i16_3op = 0b000 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
