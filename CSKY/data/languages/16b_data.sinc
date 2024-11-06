@@ -125,17 +125,13 @@ with : i16_optype = 0b01 & i16_4op = 0b1100 {
     }
 }
 :lsli i16_imm5_rz, i16_imm5_rx , i16_imm5_imm is i16_optype = 0b01 & i16_3op = 0b000 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
-    i16_imm5_rz = (i16_imm5_rx << (i16_imm5_imm));
+    i16_imm5_rz = zext(i16_imm5_rx << i16_imm5_imm);
 }
 :lsri i16_imm5_rz, i16_imm5_rx, i16_imm5_imm is i16_optype = 0b01 & i16_3op = 0b001 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
-    if(i16_imm5_imm:4==0) goto <end>;
-    i16_imm5_rz = i16_imm5_rx >> i16_imm5_imm;
-    <end>
+    i16_imm5_rz = zext(i16_imm5_rx >> i16_imm5_imm);
 }
 :asri i16_imm5_rz, i16_imm5_rx, i16_imm5_imm is i16_optype = 0b01 & i16_3op = 0b010 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
-    if(i16_imm5_imm:4==0) goto <end>;
     i16_imm5_rz = i16_imm5_rx s>> i16_imm5_imm;
-    <end>
 }
 
 
