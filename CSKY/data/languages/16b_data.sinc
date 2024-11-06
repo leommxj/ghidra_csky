@@ -48,7 +48,7 @@
 }
 # subi instruction ----2
 :subi i16_imm3_rz, i16_imm3_rx, oimm is i16_optype = 0b01 & i16_3op = 0b011 & i16_imm3_sop = 0b11 & i16_imm3_rx & i16_imm3_rz & i16_imm3_imm[oimm = (i16_imm3_imm+1);] {
-    i16_imm3_rz = i16_imm3_rx + oimm;
+    i16_imm3_rz = i16_imm3_rx - oimm;
 }
 # subi(sp)
 :subi "sp", sp, imm is i16_optype = 0b00 & i16_4op = 0b0101 & i16_imm7_sop = 0b001 & sp & i16_imm7_immh & i16_imm7_imml [imm = (((i16_imm7_immh<<5)+i16_imm7_imml)<<2);] {
