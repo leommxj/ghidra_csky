@@ -155,18 +155,20 @@ with : i32_op = 0b0001 {
 }
 with : i32_op = 0b1001 {
     :andi i32_imm12_rz, i32_imm12_rx, i32_imm12_imm is i32_imm12_sop = 0b0010 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm {
-        i32_imm12_rz = i32_imm12_rx | zext(i32_imm12_imm:4);
+        local tmp:4 = i32_imm12_rx & zext(i32_imm12_imm:2);
+		i32_imm12_rz = tmp;
     }
     :andni i32_imm12_rz, i32_imm12_rx, i32_imm12_imm is i32_imm12_sop = 0b0011 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm {
-        local tmp:4 = i32_imm12_rx | zext(i32_imm12_imm:4);
-        i32_imm12_rz = ~tmp;
+        local tmp:4 = i32_imm12_rx & ~zext(i32_imm12_imm:2);
+        i32_imm12_rz = tmp;
     }
     :xori i32_imm12_rz, i32_imm12_rx, i32_imm12_imm is i32_imm12_sop = 0b0100 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm {
-        i32_imm12_rz = i32_imm12_rx ^ zext(i32_imm12_imm:4);
+		local tmp:4 = i32_imm12_rx ^ zext(i32_imm12_imm:2);
+        i32_imm12_rz = tmp;
     }
 }
 :ori i32_imm16_rz, i32_imm16_rx, i32_imm16_imm is i32_op = 0b1011 & i32_imm16_rz & i32_imm16_rx & i32_imm16_imm {
-    i32_imm16_rz = i32_imm16_rx | zext(i32_imm16_imm:4);
+    i32_imm16_rz = i32_imm16_rx | zext(i32_imm16_imm:2);
 }
 
 
@@ -227,16 +229,12 @@ with : i32_op = 0b0001 {
 # bit operation Part
 with : i32_op = 0b0001 & i32_r_sop = 0b001010 {
     :bclri i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 {
-        local tmp = i32_r_rx & (1<<i32_r_imm5);
-        if (tmp==0) goto <end>;
-        i32_r_rz = i32_r_rx - (1<<i32_r_imm5);
-        <end>
+		local tmp:4 = 1<<i32_r_imm5;
+        i32_r_rz = i32_r_rx & ~tmp;
     }
     :bseti i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_imm5 {
-        local tmp = i32_r_rx & (1<<i32_r_imm5);
-        if (tmp!=0) goto <end>;
-        i32_r_rz = i32_r_rx + (1<<i32_r_imm5);
-        <end>
+        local tmp:4 = 1<<i32_r_imm5;
+        i32_r_rz = i32_r_rx | tmp;
     }
     :btsti i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00100 & i32_bit_0004 = 0b00000 & i32_r_rx & i32_r_imm5 {
         local tmp:4 = i32_r_rx & (1<<i32_r_imm5);
