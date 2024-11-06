@@ -251,10 +251,18 @@ with : i32_op = 0b0001 & i32_r_sop = 0b001010 {
     i32_r_rz = zext(tmp);
 }
 :sext i32_r_rz, i32_r_rx, i32_r_pcode, i32_r_imm5 is i32_op = 0b0001 & i32_r_sop = 0b010110 & i32_r_rz & i32_r_rx & i32_r_pcode & i32_r_imm5 {
-    local tmp:4 = (i32_r_rx << (31-i32_r_pcode));
-    tmp = (tmp >> (31-i32_r_pcode));
-    tmp = (tmp >> i32_r_imm5);
-    i32_r_rz = sext(tmp);
+	local upper_mask:4 = ( 1 << i32_r_pcode ) - 1;
+    i32_r_rz = sext( ( i32_r_rx & upper_mask ) >> i32_r_imm5 );
+}
+
+# used i32_r_ry instead i32_r_rz - it's ok
+:ins i32_r_ry, i32_r_rx, i32_bit_0509, i32_bit_0004 is i32_op = 0b0001 & i32_r_sop = 0b010111 & i32_r_ry & i32_r_rx & i32_bit_0509 & i32_bit_0004 {
+	local size:4 = i32_bit_0509 + 1;
+	local rx_mask:4 = ( 1 << size) - 1;
+	local rx_value:4 = i32_r_rx & rx_mask;
+	local rz_mask:4 = (( 1 << size) - 1 ) << i32_bit_0004;
+	local rz_value:4 = i32_r_ry & ~rz_mask;
+	i32_r_ry = rz_value | (rx_value << i32_bit_0004);
 }
 
 # compare Part

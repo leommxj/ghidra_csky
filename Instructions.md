@@ -77,7 +77,7 @@
 ##### extract and insert
 - [x] ZEXT32 Extract bit and extend unsigned
 - [x] SEXT32 Extract bit and extend signed
-- [ ] INS32 Bit insert
+- [x] INS32 Bit insert
 - [ ] ZEXTB32 Extract byte and extend unsigned
 - [ ] ZEXTH32 Extract half-word and extend unsigned
 - [ ] SEXTB32 Extract byte and extend signed
