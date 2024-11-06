@@ -160,7 +160,7 @@ with : i16_optype = 0b00 & i16_3op = 0b111 {
     }
     # cmpnei
     :cmpnei i16_imm5_rx, i16_imm5_imm is i16_imm5_sop = 0b010 & i16_imm5_rx & i16_imm5_imm {
-        psr_cf = (i16_imm5_rx !=  ext(i16_imm5_imm:4));
+        psr_cf = (i16_imm5_rx != zext(i16_imm5_imm:4));
     }
     # cmplti
     :cmplti i16_imm5_rx, oimm5 is i16_imm5_sop = 0b001 & i16_imm5_rx & i16_imm5_imm [oimm5 = i16_imm5_imm+1;] {
