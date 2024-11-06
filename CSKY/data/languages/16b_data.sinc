@@ -19,7 +19,7 @@
 }
 # addi 16 bit instruction ----2
 :addi i16_imm3_rz, i16_imm3_rx, oimm is i16_optype = 0b01 & i16_3op = 0b011 & i16_imm3_sop = 0b10 & i16_imm3_rz & i16_imm3_rx & i16_imm3_imm [oimm = (i16_imm3_imm+1);] {
-    i16_imm3_rz = i16_imm3_rz + oimm:4;
+    i16_imm3_rz = i16_imm3_rx + oimm:4;
 }
 # addi(sp) 16 bit instruction ----1
 :addi i16_imm8_rz, sp, real_imm is i16_optype = 0b00 & i16_3op = 0b011 & sp & i16_imm8_rz & i16_imm8_imm [real_imm = (i16_imm8_imm<<2);] {
