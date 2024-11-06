@@ -243,12 +243,16 @@ with : i32_op = 0b0001 & i32_r_sop = 0b001010 {
 }
 
 # extract and insert Part
-# msb(pcode) should larger than lsb(imm5) zextb/zexth is pseudo instruction in certain situation
+# msb(pcode) should not less than lsb(imm5) zextb/zexth is pseudo instruction in certain situation
+:zext i32_r_rz, i32_r_rx, i32_r_pcode, i32_r_imm5 is i32_op = 0b0001 & i32_r_sop = 0b010101 & i32_r_rz & i32_r_rx & i32_r_pcode & i32_r_imm5 & i32_ext {
+    i32_r_rz = zext( ( i32_r_rx >> i32_r_pcode ) & 1 );
+}
 :zext i32_r_rz, i32_r_rx, i32_r_pcode, i32_r_imm5 is i32_op = 0b0001 & i32_r_sop = 0b010101 & i32_r_rz & i32_r_rx & i32_r_pcode & i32_r_imm5 {
-    local tmp:4 = (i32_r_rx << (31-i32_r_pcode));
-    tmp = (tmp >> (31-i32_r_pcode));
-    tmp = (tmp >> i32_r_imm5);
-    i32_r_rz = zext(tmp);
+	local upper_mask:4 = ( 1 << i32_r_pcode ) - 1;
+    i32_r_rz = zext( ( i32_r_rx & upper_mask ) >> i32_r_imm5 );
+}
+:sext i32_r_rz, i32_r_rx, i32_r_pcode, i32_r_imm5 is i32_op = 0b0001 & i32_r_sop = 0b010110 & i32_r_rz & i32_r_rx & i32_r_pcode & i32_r_imm5 & i32_ext {
+    i32_r_rz = sext( ( i32_r_rx >> i32_r_pcode ) & 1 );
 }
 :sext i32_r_rz, i32_r_rx, i32_r_pcode, i32_r_imm5 is i32_op = 0b0001 & i32_r_sop = 0b010110 & i32_r_rz & i32_r_rx & i32_r_pcode & i32_r_imm5 {
 	local upper_mask:4 = ( 1 << i32_r_pcode ) - 1;
