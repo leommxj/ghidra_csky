@@ -175,16 +175,12 @@ with : i16_optype = 0b00 & i16_3op = 0b111 {
 # rx is rz ,rz is sop
 with : i16_optype = 0b00 & i16_3op = 0b111 {
     :bclri i16_imm5_rx, i16_imm5_imm is i16_imm5_sop = 0b100 & i16_imm5_rx & i16_imm5_imm {
-        local tmp = i16_imm5_rx & (1<<i16_imm5_imm);
-        if (tmp==0) goto <end>;
-        i16_imm5_rx = i16_imm5_rx - (1<<i16_imm5_imm);
-        <end>
+        local tmp:4 = 1<<i16_imm5_imm;
+        i16_imm5_rx = zext( i16_imm5_rx & (~tmp) );
     }
     :bseti i16_imm5_rx, i16_imm5_imm is i16_imm5_sop = 0b101 & i16_imm5_rx & i16_imm5_imm {
-        local tmp = i16_imm5_rx & (1<<i16_imm5_imm);
-        if (tmp!=0) goto <end>;
-        i16_imm5_rx = i16_imm5_rx + (1<<i16_imm5_imm);
-        <end>
+        local tmp:4 = 1<<i16_imm5_imm;
+        i16_imm5_rx = zext( i16_imm5_rx | tmp );
     }
     :btsti i16_imm5_rx, i16_imm5_imm is i16_imm5_sop = 0b110 & i16_imm5_rx & i16_imm5_imm {
         local tmp = i16_imm5_rx & (1<<i16_imm5_imm);
