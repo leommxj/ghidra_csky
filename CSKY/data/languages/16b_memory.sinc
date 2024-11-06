@@ -33,45 +33,59 @@
 }
 
 # multi-register access Part
-
-push16list: is i16_bit_0003 = 0x0 {}
-push16list: {r4} is i16_bit_0003 = 0x1 & r4 {push(r4);}
-push16list: {r4,r5} is i16_bit_0003 = 0x2 & r4 & r5 {push(r5); push(r4);}
-push16list: {r4,r5,r6} is i16_bit_0003 = 0x3 & r4 & r5 & r6 {push(r6); push(r5); push(r4);}
-push16list: {r4,r5,r6,r7} is i16_bit_0003 = 0x4 & r4 & r5 & r6 & r7 {push(r7); push(r6); push(r5); push(r4);}
-push16list: {r4,r5,r6,r7,r8} is i16_bit_0003 = 0x5 & r4 & r5 & r6 & r7 & r8 {push(r8); push(r7); push(r6); push(r5); push(r4);}
-push16list: {r4,r5,r6,r7,r8,r9} is i16_bit_0003 = 0x6 & r4 & r5 & r6 & r7 & r8 & r9 {push(r9); push(r8); push(r7); push(r6); push(r5); push(r4);}
-push16list: {r4,r5,r6,r7,r8,r9,r10} is i16_bit_0003 = 0x7 & r4 & r5 & r6 & r7 & r8 & r9 & r10 {push(r10); push(r9); push(r8); push(r7); push(r6); push(r5); push (r4);}
-push16list: {r4,r5,r6,r7,r8,r9,r10,r11} is i16_bit_0003 = 0x8 & r4 & r5 & r6 & r7 & r8 & r9 & r10 & r11 {push(r11); push(r10); push(r9); push(r8); push(r7); push(r6); push (r5); push(r4);}
-
-push16lr: is i16_bit_0404 = 0b0 {}
-push16lr:r15 is i16_bit_0404 = 0b1 & r15 {push(r15);}
-push16lr:,r15 is i16_bit_0404 = 0b1 & i16_bit_0003 != 0x0 & r15 {push(r15);}
-
 # push
-:push push16list^push16lr is i16_optype = 0b00 & i16_4op = 0b0101 & i16_bit_0509 = 0b00110 & push16list & push16lr {
-    build push16lr;
-    build push16list;
+push16list_8: r11              is i16_bit_0003 = 0x8 & r11                {push(r11);}
+push16list_7: r10,push16list_8 is i16_bit_0003 > 0x7 & r10 & push16list_8 {push(r10);}
+push16list_7: r10              is i16_bit_0003 = 0x7 & r10                {push(r10);}
+push16list_6: r9,push16list_7  is i16_bit_0003 > 0x6 & r9 & push16list_7  {push(r9);}
+push16list_6: r9               is i16_bit_0003 = 0x6 & r9                 {push(r9);}
+push16list_5: r8,push16list_6  is i16_bit_0003 > 0x5 & r8 & push16list_6  {push(r8);}
+push16list_5: r8               is i16_bit_0003 = 0x5 & r8                 {push(r8);}
+push16list_4: r7,push16list_5  is i16_bit_0003 > 0x4 & r7 & push16list_5  {push(r7);}
+push16list_4: r7               is i16_bit_0003 = 0x4 & r7                 {push(r7);}
+push16list_3: r6,push16list_4  is i16_bit_0003 > 0x3 & r6 & push16list_4  {push(r6);}
+push16list_3: r6               is i16_bit_0003 = 0x3 & r6                 {push(r6);}
+push16list_2: r5,push16list_3  is i16_bit_0003 > 0x2 & r5 & push16list_3  {push(r5);}
+push16list_2: r5               is i16_bit_0003 = 0x2 & r5                 {push(r5);}
+push16list_1: r4,push16list_2  is i16_bit_0003 > 0x1 & r4 & push16list_2  {push(r4);}
+push16list_1: r4               is i16_bit_0003 = 0x1 & r4                 {push(r4);}
+push16list: push16list_1       is i16_bit_0003 > 0x0 & push16list_1       {}
+push16list:                    is i16_bit_0003 = 0x0                      {}
+
+push16lr:                      is i16_bit_0404 = 0x0                      {}
+push16lr: r15                  is i16_bit_0404 = 0x1 & r15                {push(r15);}
+
+push16braced: {push16list, push16lr} is push16list & push16lr             {}
+
+:push push16braced is i16_optype = 0b00 & i16_4op = 0b0101 & i16_bit_0509 = 0b00110 & push16braced {
+    build push16braced;
 }
 
-pop16list: is i16_bit_0003 = 0x0 {}
-pop16list: {r4} is i16_bit_0003 = 0x1 & r4 {pop(r4);}
-pop16list: {r4,r5} is i16_bit_0003 = 0x2 & r4 & r5 {pop(r4); pop(r5);}
-pop16list: {r4,r5,r6} is i16_bit_0003 = 0x3 & r4 & r5 & r6 {pop(r4); pop(r5); pop(r6);}
-pop16list: {r4,r5,r6,r7} is i16_bit_0003 = 0x4 & r4 & r5 & r6 & r7 {pop(r4); pop(r5); pop(r6); pop(r7);}
-pop16list: {r4,r5,r6,r7,r8} is i16_bit_0003 = 0x5 & r4 & r5 & r6 & r7 & r8 {pop(r4); pop(r5); pop(r6); pop(r7); pop(r8);}
-pop16list: {r4,r5,r6,r7,r8,r9} is i16_bit_0003 = 0x6 & r4 & r5 & r6 & r7 & r8 & r9 {pop(r4); pop(r5); pop(r6); pop(r7); pop(r8); pop(r9);}
-pop16list: {r4,r5,r6,r7,r8,r9,r10} is i16_bit_0003 = 0x7 & r4 & r5 & r6 & r7 & r8 & r9 & r10 {pop(r4); pop(r5); pop(r6); pop(r7); pop(r8); pop(r9); pop (r10);}
-pop16list: {r4,r5,r6,r7,r8,r9,r10,r11} is i16_bit_0003 = 0x8 & r4 & r5 & r6 & r7 & r8 & r9 & r10 & r11 {pop(r4); pop(r5); pop(r6); pop(r7); pop(r8); pop(r9); pop (r10); pop(r11);}
-
-pop16lr: is i16_bit_0404 = 0b0 {}
-pop16lr:r15 is i16_bit_0404 = 0b1 & r15 {pop(r15);}
-pop16lr:,r15 is i16_bit_0404 = 0b1 & i16_bit_0003 != 0x0 & r15 {pop(r15);}
-
 # pop
-:pop pop16list^pop16lr is i16_optype = 0b00 & i16_4op = 0b0101 & i16_bit_0509 = 0b00100 & pop16list & pop16lr {
-    build pop16list;
-    build pop16lr;
+pop16list_1:                 is i16_bit_0003 < 0x1                      {}
+pop16list_1: r4              is i16_bit_0003 >= 0x1 & r4                {pop(r4);}
+pop16list_2: pop16list_1     is i16_bit_0003 < 0x2  & pop16list_1       {}
+pop16list_2: pop16list_1,r5  is i16_bit_0003 >= 0x2 & r5 & pop16list_1  {pop(r5);}
+pop16list_3: pop16list_2     is i16_bit_0003 < 0x3  & pop16list_2       {}
+pop16list_3: pop16list_2,r6  is i16_bit_0003 >= 0x3 & r6 & pop16list_2  {pop(r6);}
+pop16list_4: pop16list_3     is i16_bit_0003 < 0x4  & pop16list_3       {}
+pop16list_4: pop16list_3,r7  is i16_bit_0003 >= 0x4 & r7 & pop16list_3  {pop(r7);}
+pop16list_5: pop16list_4     is i16_bit_0003 < 0x5  & pop16list_4       {}
+pop16list_5: pop16list_4,r8  is i16_bit_0003 >= 0x5 & r8 & pop16list_4  {pop(r8);}
+pop16list_6: pop16list_5     is i16_bit_0003 < 0x6  & pop16list_5       {}
+pop16list_6: pop16list_5,r9  is i16_bit_0003 >= 0x6 & r9 & pop16list_5  {pop(r9);}
+pop16list_7: pop16list_6     is i16_bit_0003 < 0x7  & pop16list_6       {}
+pop16list_7: pop16list_6,r10 is i16_bit_0003 >= 0x7 & r10 & pop16list_6 {pop(r10);}
+pop16list: pop16list_7       is i16_bit_0003 < 0x8  & pop16list_7       {}
+pop16list: pop16list_7,r11   is i16_bit_0003 = 0x8  & r11 & pop16list_7 {pop(r11);}
+
+pop16lr: r15                 is i16_bit_0404 = 0x1 & r15                {pop(r15);}
+pop16lr:                     is i16_bit_0404 = 0x0                      {}
+
+pop16braced: {pop16lr, pop16list} is pop16lr & pop16list                {}
+
+:pop pop16braced is i16_optype = 0b00 & i16_4op = 0b0101 & i16_bit_0509 = 0b00100 & pop16braced {
+    build pop16braced;
     local tmp:4 = r15 & 0xfffffffe;
     return [tmp];
 }
