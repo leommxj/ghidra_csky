@@ -112,7 +112,7 @@
 - [x] DIVU32 Divide unsigned
 - [x] DIVS32 Divide signed
 ##### miscellaneous operation
-- [ ] ABS32 Absolute value
+- [x] ABS32 Absolute value
 - [ ] FF0. 32 Fast find 0
 - [ ] FF1. 32 Fast find 1
 - [x] BMASKI32 Bit mask generation immediate
