@@ -1,11 +1,11 @@
 # immediate operand offset access Part
 # ld.b
 :ld.b i16_imm5_rz, (i16_imm5_rx, i16_imm5_imm) is i16_optype = 0b10 & i16_3op = 0b000 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm {
-    i16_imm5_rz = *:1 (i16_imm5_rx+i16_imm5_imm);
+    i16_imm5_rz = zext(*:1 (i16_imm5_rx+i16_imm5_imm));
 }
 # ld.h
 :ld.h i16_imm5_rz, (i16_imm5_rx, disp) is i16_optype = 0b10 & i16_3op = 0b001 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm [disp = (i16_imm5_imm<<1);] {
-    i16_imm5_rz = *:2 (i16_imm5_rx+disp);
+    i16_imm5_rz = zext(*:2 (i16_imm5_rx+disp));
 }
 # ld.w
 :ld.w i16_imm5_rz, (i16_imm5_rx, disp) is i16_optype = 0b10 & i16_3op = 0b010 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm [disp = (i16_imm5_imm<<2);] {
