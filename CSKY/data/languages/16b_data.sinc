@@ -5,8 +5,8 @@
     i16_r4_rz = i16_r4_rz + i16_r4_rx;
 }
 # addu 16 bit instruction ----2
-:addu i16_r3_rz, i16_r3_rx is i16_optype = 0b01 & i16_3op = 0b011 & i16_r3_sop = 0b00 & i16_r3_rz & i16_r3_rx {
-    i16_r3_rz = i16_r3_rz + i16_r3_rx;
+:addu i16_r3_rz, i16_r3_rx, i16_r3_ry is i16_optype = 0b01 & i16_3op = 0b011 & i16_r3_sop = 0b00 & i16_r3_rz & i16_r3_rx & i16_r3_ry {
+    i16_r3_rz = i16_r3_rx + i16_r3_ry;
 }
 :addc i16_r4_rz, i16_r4_rx is i16_optype = 0b01 & i16_4op = 0b1000 & i16_r4_sop = 0b01 & i16_r4_rz & i16_r4_rx {
 	local tmp:4 = psr_cf;
