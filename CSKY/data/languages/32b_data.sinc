@@ -10,7 +10,7 @@
 
 # add-substract Part
 :addu i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_r_rz {
-    i32_r_rz = i32_r_rx + i32_r_ry;
+    i32_r_rz = zext( i32_r_rx + i32_r_ry );
 }
 :addc i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b00010 & i32_r_ry & i32_r_rx & i32_r_rz {
 	local tmp:4 = psr_cf;
@@ -19,15 +19,15 @@
 }
 # addi instruction ----1
 :addi i32_imm12_rz, i32_imm12_rx, oimm is i32_op = 0b1001 & i32_imm12_sop = 0b0000 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [oimm = (i32_imm12_imm+1);] {
-    i32_imm12_rz = i32_imm12_rx + oimm:4;
+    i32_imm12_rz = zext( i32_imm12_rx + oimm:4 );
 }
 # addi instruction ----2
 :addi i32_imm18_rz, r28, i32_imm18_imm_A1 is i32_op = 0b0011 & i32_imm18_sop = 0b111 & i32_imm18_rz & i32_imm18_imm_A1 & r28 {
-    i32_imm18_rz = r28 + i32_imm18_imm_A1;
+    i32_imm18_rz = zext( r28 + i32_imm18_imm_A1 );
 }
 
 :subu i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
-    i32_r_rz = i32_r_rx - i32_r_ry;
+    i32_r_rz = zext( i32_r_rx - i32_r_ry );
 }
 :subc i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b01000 & i32_r_rz & i32_r_rx & i32_r_ry {
 	local tmp:4 = psr_cf;
@@ -35,19 +35,19 @@
 	i32_r_rz = zext( i32_r_rx - i32_r_ry - (tmp ^ 1) );
 }
 :subi i32_imm12_rz, i32_imm12_rx, oimm is i32_op = 0b1001 & i32_imm12_sop = 0b0001 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [oimm = (i32_imm12_imm+1);] {
-    i32_imm12_rz = i32_imm12_rx - oimm;
+    i32_imm12_rz = zext( i32_imm12_rx - oimm);
 }
 
 # index
 with : i32_op = 0b0001 & i32_r_sop = 0b000010 {
     :ixh i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_ry {
-        i32_r_rz = i32_r_rx + i32_r_ry<<1;
+        i32_r_rz = zext( i32_r_rx + (i32_r_ry<<1));
     }
     :ixw i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_ry {
-        i32_r_rz = i32_r_rx + i32_r_ry<<2;
+        i32_r_rz = zext( i32_r_rx + (i32_r_ry<<2));
     }
     :ixd i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
-        i32_r_rz = i32_r_rx + i32_r_ry<<3;
+        i32_r_rz = zext( i32_r_rx + (i32_r_ry<<3));
     }
 }
 
@@ -92,10 +92,10 @@ with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
 }
 # movi second format single register imm16 (16,20) is rz
 :movi i32_imm16_rx, i32_imm16_imm is i32_op = 0b1010 & i32_imm16_sop = 0b10000 & i32_imm16_rx & i32_imm16_imm {
-    i32_imm16_rx = i32_imm16_imm;
+    i32_imm16_rx = zext( i32_imm16_imm:2 );
 }
 :movih i32_imm16_rx, i32_imm16_imm is i32_op = 0b1010 & i32_imm16_sop = 0b10001 & i32_imm16_rx & i32_imm16_imm {
-    i32_imm16_rx = i32_imm16_imm<<16;
+    i32_imm16_rx = zext( i32_imm16_imm:2 << 16 );
 }
 :mvc i32_r_rz is i32_op = 0b0001 & i32_bit_2125 = 0b00000 & i32_bit_1620 = 0b00000 & i32_bit_1015 = 0b000001 & i32_bit_0509 = 0b01000 & i32_r_rz {
     i32_r_rz = zext(psr_cf);
@@ -134,7 +134,7 @@ with : i32_op = 0b0001 {
         }
         :andn i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_ry {
             local tmp:4 = i32_r_rx & i32_r_ry;
-            i32_r_rz = ~tmp;
+            i32_r_rz =- zext( ~tmp );
         }
     }
     with : i32_r_sop = 0b001001 {
@@ -177,11 +177,11 @@ with : i32_op = 0b0001 {
     with : i32_r_sop = 0b010000 {
         :lsl i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00001 & i32_r_ry & i32_r_rx & i32_r_rz {
             local tmp:4 = i32_r_ry & 0x3f;
-            i32_r_rz = i32_r_rx << tmp;
+            i32_r_rz = zext( i32_r_rx << tmp );
         }
         :lsr i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00010 & i32_r_ry & i32_r_rx & i32_r_rz {
             local tmp:4 = i32_r_ry & 0x3f;
-            i32_r_rz = i32_r_rx >> tmp;
+            i32_r_rz = zext( i32_r_rx >> tmp );
         }
         :asr i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_ry {
             local tmp:4 = i32_r_ry & 0x3f;
@@ -189,22 +189,22 @@ with : i32_op = 0b0001 {
         }
         :rotl i32_r_rz, i32_r_rx, i32_r_ry is i32_r_pcode = 0b01000 & i32_r_rz & i32_r_rx & i32_r_ry {
             local tmp:4 = i32_r_ry & 0x3f;
-            i32_r_rz = (i32_r_rx << tmp) | (i32_r_rx>>(32-tmp));
+            i32_r_rz = zext((i32_r_rx << tmp) | (i32_r_rx>>(32-tmp)));
         }
     }
     # lsli/lsri/asri/rotli i32_r_imm5 should in [1-31]
     with : i32_r_sop = 0b010010 {
         :lsli i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00001 & i32_r_rz & i32_r_rx & i32_r_imm5 {
-            i32_r_rz = (i32_r_rx << (i32_r_imm5));
+            i32_r_rz = zext( i32_r_rx << i32_r_imm5);
         }
         :lsri i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_r_imm5 {
-            i32_r_rz = (i32_r_rx >> (i32_r_imm5));
+            i32_r_rz = zext( i32_r_rx >> i32_r_imm5);
         }
         :asri i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b00100 & i32_r_rz & i32_r_rx & i32_r_imm5 {
             i32_r_rz = i32_r_rx s>> i32_r_imm5;
         }
         :rotli i32_r_rz, i32_r_rx, i32_r_imm5 is i32_r_pcode = 0b01000 & i32_r_rz & i32_r_rx & i32_r_imm5 {
-            i32_r_rz = ((i32_r_rx << (i32_r_imm5))|(i32_r_rx >> (32-i32_r_imm5)));
+            i32_r_rz = zext((i32_r_rx << i32_r_imm5)|(i32_r_rx >> 32-i32_r_imm5));
         }
     }
     with : i32_r_sop = 0b010011 {
