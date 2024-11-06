@@ -25,11 +25,11 @@
 }
 # st.w
 :st.w i16_imm5_rz, (i16_imm5_rx, disp) is i16_optype = 0b10 & i16_3op = 0b110 & i16_imm5_rx & i16_imm5_rz & i16_imm5_imm [disp = (i16_imm5_imm<<2);] {
-    *:4 (i16_imm5_rx+disp) = i16_imm5_rz;
+    *:4 (i16_imm5_rx+disp) = i16_imm5_rz:4;
 }
 # st.w (sp)
 :st.w i16_imm5_rz, (sp, disp) is i16_optype = 0b10 & i16_3op = 0b111 & i16_imm5_imm3 & i16_imm5_rz & i16_imm5_imm & sp [disp = (((i16_imm5_imm3<<5)+i16_imm5_imm)<<2);] {
-    *:4 (sp+disp) = i16_imm5_rz;
+    *:4 (sp+disp) = i16_imm5_rz:4;
 }
 
 # multi-register access Part
