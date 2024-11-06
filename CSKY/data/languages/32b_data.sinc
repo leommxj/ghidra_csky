@@ -13,8 +13,9 @@
     i32_r_rz = i32_r_rx + i32_r_ry;
 }
 :addc i32_r_rz, i32_r_rx, i32_r_ry is i32_op = 0b0001 & i32_r_sop = 0b000000 & i32_r_pcode = 0b00010 & i32_r_ry & i32_r_rx & i32_r_rz {
-    set_cf(carry(i32_r_rx, i32_r_ry));
-    i32_r_rz = i32_r_rx + i32_r_ry;
+	local tmp:4 = psr_cf;
+	psr_cf = carry(i32_r_rx, i32_r_ry) || ( i32_r_rx + i32_r_ry == 0xFFFFFFFF && tmp == 1 );
+    i32_r_rz = zext( i32_r_rx + i32_r_ry + tmp );
 }
 # addi instruction ----1
 :addi i32_imm12_rz, i32_imm12_rx, oimm is i32_op = 0b1001 & i32_imm12_sop = 0b0000 & i32_imm12_rz & i32_imm12_rx & i32_imm12_imm [oimm = (i32_imm12_imm+1);] {
@@ -275,26 +276,26 @@ with : i32_op = 0b0001 & i32_r_sop = 0b001010 {
 with : i32_op = 0b0001 {
     with : i32_r_sop = 0b000001 {
         :cmpne i32_r_rx, i32_r_ry is i32_r_pcode = 0b00100 & i32_r_rz = 0b00000 & i32_r_rx & i32_r_ry {
-            set_cf(i32_r_rx!=i32_r_ry);
+            psr_cf = (i32_r_rx != i32_r_ry);
         }
         :cmphs i32_r_rx, i32_r_ry is i32_r_pcode = 0b00001 & i32_r_rz = 0b00000 & i32_r_rx & i32_r_ry {
-            set_cf(i32_r_rx>=i32_r_ry);
+            psr_cf = (i32_r_rx >= i32_r_ry);
         }
         :cmplt i32_r_rx, i32_r_ry is i32_r_pcode = 0b00010 & i32_r_rz = 0b00000 & i32_r_rx & i32_r_ry {
-            set_cf(i32_r_rx s< i32_r_ry);
+            psr_cf = (i32_r_rx s< i32_r_ry);
         }
     }
 }
 # cmpnei/cmphsi/cmplti
 with : i32_op = 0b1010 {
     :cmpnei i32_imm16_rx, i32_imm16_imm is i32_imm16_sop = 0b11010 & i32_imm16_rx & i32_imm16_imm {
-        set_cf(i32_imm16_rx!=i32_imm16_imm);
+        psr_cf = (i32_imm16_rx!=i32_imm16_imm);
     }
     :cmphsi i32_imm16_rx, oimm is i32_imm16_sop = 0b11000 & i32_imm16_rx & i32_imm16_imm [oimm = i32_imm16_imm+1;] {
-        set_cf(i32_imm16_rx!=oimm);
+        psr_cf = (i32_imm16_rx>=oimm);
     }
     :cmplti i32_imm16_rx, oimm is i32_imm16_sop = 0b11001 & i32_imm16_rx & i32_imm16_imm [oimm = i32_imm16_imm+1;] {
-        set_cf(i32_imm16_rx s< oimm);
+        psr_cf = (i32_imm16_rx s< oimm);
     }
 }
 
