@@ -36,6 +36,7 @@ macro set_cf(result){
         $(cf) = 0b1;
     <end>
 }
+define pcodeop stub;
 
 macro push(x){
 	sp = sp - 4;
