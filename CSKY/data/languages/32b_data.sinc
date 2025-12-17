@@ -75,6 +75,19 @@ with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
     }
 }
 
+# declt
+with : i32_op = 0b0001 & i32_r_sop = 0b000100 {
+    :declt i32_r_rz, i32_r_rx, i32_bit_2125 is i32_r_pcode = 0b00010 & i32_r_rz & i32_r_rx & i32_bit_2125 {
+        i32_r_rz = i32_r_rx - zext( i32_bit_2125:1 );
+        if(i32_r_rz < 0) goto <then>;
+        psr_cf = 0;
+        goto <end>;
+        <then>
+        psr_cf = 1;
+        <end>
+    }
+}
+
 # data transfer Part
 :mov i32_r_rz, i32_r_rx is i32_op = 0b0001 & i32_r_sop = 0b010010 & i32_r_pcode = 0b00001 & i32_r_imm5 = 0b00000 & i32_r_rx & i32_r_rz {
     i32_r_rz = i32_r_rx;
@@ -109,6 +122,25 @@ with : i32_op = 0b0001 & i32_r_sop = 0b000011 {
     local tmp:4 = ((i32_imm16_imm<<2) + inst_start) & 0xfffffffc;
     i32_imm16_rx = *:4 tmp;
 }
+
+# lrs.b
+:lrs.b i32_imm18_rz, r28, i32_imm18_imm is i32_op = 0b0011 & i32_imm18_sop = 0b000 & i32_imm18_rz & r28 & i32_imm18_imm {
+    local addr:4 = (r28 + (i32_imm18_imm)) & 0xffffffff;
+    i32_imm18_rz = zext(*:1 addr);
+}
+
+# lrs.h
+:lrs.h i32_imm18_rz, r28, i32_imm18_imm is i32_op = 0b0011 & i32_imm18_sop = 0b001 & i32_imm18_rz & r28 & i32_imm18_imm {
+    local addr:4 = (r28 + (i32_imm18_imm << 1)) & 0xffffffff;
+    i32_imm18_rz = zext(*:2 addr);
+}
+
+# lrs.w
+:lrs.w i32_imm18_rz, r28, i32_imm18_imm is i32_op = 0b0011 & i32_imm18_sop = 0b010 & i32_imm18_rz & r28 & i32_imm18_imm {
+    local addr:4 = (r28 + (i32_imm18_imm << 2)) & 0xffffffff;
+    i32_imm18_rz = *:4 addr;
+}
+
 # grs
 :grs i32_imm18_rz, i32_imm18_immSPD_O1 is i32_op = 0b0011 & i32_imm18_sop = 0b011 & i32_imm18_rz & i32_imm18_immSPD_O1 {
     i32_imm18_rz = zext(i32_imm18_immSPD_O1);

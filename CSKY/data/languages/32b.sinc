@@ -61,7 +61,7 @@ attach variables [i32_imm12_rz_A1] [r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 s
 i32_j_offset: t is i32_j_sbit = 0b0 & i32_j_offset_sh & i32_j_offset_l [t = inst_start + (((i32_j_offset_sh<<16) + i32_j_offset_l)<<1);] { export *[ram]:4 t;}
 i32_j_offset: t is i32_j_sbit = 0b1 & i32_j_offset_sh & i32_j_offset_l [t = inst_start - (0x4000000-(((i32_j_offset_sh<<16) + i32_j_offset_l)<<1));] { export *[ram]:4 t;}
 
-i32_imm18_imm: t is i32_imm18_imm_h & i32_imm18_imm_l [t = (i32_imm18_imm_h<<16)+i32_imm18_imm_l;] {export t;}
+i32_imm18_imm: t is i32_imm18_imm_h & i32_imm18_imm_l [t = (i32_imm18_imm_h<<16)+i32_imm18_imm_l;] {local tmp:4 = t; export tmp;}
 i32_imm18_imm_A1: t is i32_imm18_imm_h & i32_imm18_imm_l [t = (i32_imm18_imm_h<<16)+i32_imm18_imm_l+1;] {local tmp:4 = t; export tmp;}
 
 i32_imm18_immSP_O1: t is i32_imm18_sbit = 0b0 & i32_imm18_imm_nsh & i32_imm18_imm_l [t = inst_start + (((i32_imm18_imm_nsh<<16)+i32_imm18_imm_l)<<1);] {export *[ram]:4 t;}
