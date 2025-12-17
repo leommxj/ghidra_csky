@@ -67,6 +67,21 @@ public class CSKY_ElfRelocationHandler extends ElfRelocationHandler {
 			byteLength = 4;
 			memory.setInt(relocationAddress, value32);
 			break;
+		case CSKY_ElfRelocationConstants.R_CSKY_RELATIVE:
+			value32 = (int) (base + addend);
+			byteLength = 4;
+			memory.setInt(relocationAddress, value32);
+			break;
+		case CSKY_ElfRelocationConstants.R_CSKY_GLOB_DAT:
+			value32 = (int) (symbolValue + addend);
+			byteLength = 4;
+			memory.setInt(relocationAddress, value32);
+			break;
+		case CSKY_ElfRelocationConstants.R_CSKY_JUMP_SLOT:
+			value32 = (int) (symbolValue);
+			byteLength = 4;
+			memory.setInt(relocationAddress, value32);
+			break;
 		case CSKY_ElfRelocationConstants.R_CSKY_PCRELJSR_IMM11BY2:
 			break;
 		case CSKY_ElfRelocationConstants.R_CSKY_PCRELJSR_IMM26BY2:
