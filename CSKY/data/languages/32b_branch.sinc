@@ -61,7 +61,7 @@ with : i32_op = 0b1010 {
     :jsri i32_imm16_immSP_O2 is i32_imm16_sop = 0b10111 & i32_bit_1620 = 0b00000 & i32_imm16_immSP_O2 {
         r15 = inst_next;
         local dest:4 = i32_imm16_immSP_O2 & 0xfffffffe;
-        goto [dest];
+        call [dest];
     }
 }
 
